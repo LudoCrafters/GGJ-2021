@@ -16,8 +16,8 @@ namespace UnityEngine.PostProcessing
 
             public float thresholdLinear
             {
-                set { threshold = Mathf.LinearToGammaSpace(value); }
-                get { return Mathf.GammaToLinearSpace(threshold); }
+                set => threshold = Mathf.LinearToGammaSpace(value);
+                get => Mathf.GammaToLinearSpace(threshold);
             }
 
             [Range(0f, 1f), Tooltip("Makes transition between under/over-threshold gradual (0 = hard threshold, 1 = soft threshold).")]
@@ -29,20 +29,14 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Reduces flashing noise with an additional filter.")]
             public bool antiFlicker;
 
-            public static BloomSettings defaultSettings
+            public static BloomSettings defaultSettings => new BloomSettings
             {
-                get
-                {
-                    return new BloomSettings
-                    {
-                        intensity = 0.5f,
-                        threshold = 1.1f,
-                        softKnee = 0.5f,
-                        radius = 4f,
-                        antiFlicker = false,
-                    };
-                }
-            }
+                intensity = 0.5f,
+                threshold = 1.1f,
+                softKnee = 0.5f,
+                radius = 4f,
+                antiFlicker = false,
+            };
         }
 
         [Serializable]
@@ -54,17 +48,11 @@ namespace UnityEngine.PostProcessing
             [Min(0f), Tooltip("Amount of lens dirtiness.")]
             public float intensity;
 
-            public static LensDirtSettings defaultSettings
+            public static LensDirtSettings defaultSettings => new LensDirtSettings
             {
-                get
-                {
-                    return new LensDirtSettings
-                    {
-                        texture = null,
-                        intensity = 3f
-                    };
-                }
-            }
+                texture = null,
+                intensity = 3f
+            };
         }
 
         [Serializable]
@@ -73,25 +61,19 @@ namespace UnityEngine.PostProcessing
             public BloomSettings bloom;
             public LensDirtSettings lensDirt;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        bloom = BloomSettings.defaultSettings,
-                        lensDirt = LensDirtSettings.defaultSettings
-                    };
-                }
-            }
+                bloom = BloomSettings.defaultSettings,
+                lensDirt = LensDirtSettings.defaultSettings
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
         public override void Reset()

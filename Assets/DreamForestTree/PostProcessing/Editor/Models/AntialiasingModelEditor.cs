@@ -9,16 +9,13 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(AntialiasingModel))]
     public class AntialiasingModelEditor : PostProcessingModelEditor
     {
-        SerializedProperty m_Method;
-
-        SerializedProperty m_FxaaPreset;
-
-        SerializedProperty m_TaaJitterSpread;
-        SerializedProperty m_TaaSharpen;
-        SerializedProperty m_TaaStationaryBlending;
-        SerializedProperty m_TaaMotionBlending;
-
-        static string[] s_MethodNames =
+        private SerializedProperty m_Method;
+        private SerializedProperty m_FxaaPreset;
+        private SerializedProperty m_TaaJitterSpread;
+        private SerializedProperty m_TaaSharpen;
+        private SerializedProperty m_TaaStationaryBlending;
+        private SerializedProperty m_TaaMotionBlending;
+        private static readonly string[] s_MethodNames =
         {
             "Fast Approximate Anti-aliasing",
             "Temporal Anti-aliasing"
@@ -47,7 +44,9 @@ namespace UnityEditor.PostProcessing
             else if (m_Method.intValue == (int)Method.Taa)
             {
                 if (QualitySettings.antiAliasing > 1)
+                {
                     EditorGUILayout.HelpBox("Temporal Anti-Aliasing doesn't work correctly when MSAA is enabled.", MessageType.Warning);
+                }
 
                 EditorGUILayout.LabelField("Jitter", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;

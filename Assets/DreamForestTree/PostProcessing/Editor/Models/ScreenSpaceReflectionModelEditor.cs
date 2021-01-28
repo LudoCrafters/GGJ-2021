@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
 namespace UnityEditor.PostProcessing
@@ -8,7 +7,7 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(ScreenSpaceReflectionModel))]
     public class ScreenSpaceReflectionModelEditor : PostProcessingModelEditor
     {
-        struct IntensitySettings
+        private struct IntensitySettings
         {
             public SerializedProperty reflectionMultiplier;
             public SerializedProperty fadeDistance;
@@ -16,7 +15,7 @@ namespace UnityEditor.PostProcessing
             public SerializedProperty fresnelFadePower;
         }
 
-        struct ReflectionSettings
+        private struct ReflectionSettings
         {
             public SerializedProperty blendType;
             public SerializedProperty reflectionQuality;
@@ -28,14 +27,14 @@ namespace UnityEditor.PostProcessing
             public SerializedProperty reflectBackfaces;
         }
 
-        struct ScreenEdgeMask
+        private struct ScreenEdgeMask
         {
             public SerializedProperty intensity;
         }
 
-        IntensitySettings m_Intensity;
-        ReflectionSettings m_Reflection;
-        ScreenEdgeMask m_ScreenEdgeMask;
+        private IntensitySettings m_Intensity;
+        private ReflectionSettings m_Reflection;
+        private ScreenEdgeMask m_ScreenEdgeMask;
 
         public override void OnEnable()
         {

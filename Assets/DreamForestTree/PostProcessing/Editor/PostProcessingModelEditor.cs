@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.PostProcessing;
 using System;
 using System.Linq.Expressions;
+using UnityEngine;
+using UnityEngine.PostProcessing;
 
 namespace UnityEditor.PostProcessing
 {
@@ -35,7 +35,7 @@ namespace UnityEditor.PostProcessing
         {
             GUILayout.Space(5);
 
-            var display = alwaysEnabled
+            bool display = alwaysEnabled
                 ? EditorGUIHelper.Header(serializedProperty.displayName, m_SettingsProperty, Reset)
                 : EditorGUIHelper.Header(serializedProperty.displayName, m_SettingsProperty, m_EnabledProperty, Reset);
 
@@ -50,9 +50,9 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        void Reset()
+        private void Reset()
         {
-            var obj = serializedProperty.serializedObject;
+            SerializedObject obj = serializedProperty.serializedObject;
             Undo.RecordObject(obj.targetObject, "Reset");
             target.Reset();
             EditorUtility.SetDirty(obj.targetObject);

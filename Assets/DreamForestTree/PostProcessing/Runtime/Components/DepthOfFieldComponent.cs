@@ -1,12 +1,10 @@
-using UnityEngine.Rendering;
-
 namespace UnityEngine.PostProcessing
 {
     using DebugMode = BuiltinDebugViewsModel.Mode;
 
     public sealed class DepthOfFieldComponent : PostProcessingComponentRenderTexture<DepthOfFieldModel>
     {
-        static class Uniforms
+        private static class Uniforms
         {
             internal static readonly int _DepthOfFieldTex    = Shader.PropertyToID("_DepthOfFieldTex");
             internal static readonly int _DepthOfFieldCoCTex = Shader.PropertyToID("_DepthOfFieldCoCTex");
@@ -21,39 +19,35 @@ namespace UnityEngine.PostProcessing
             internal static readonly int _DepthOfFieldParams = Shader.PropertyToID("_DepthOfFieldParams");
         }
 
-        const string k_ShaderString = "Hidden/Post FX/Depth Of Field";
+        private const string k_ShaderString = "Hidden/Post FX/Depth Of Field";
 
-        public override bool active
-        {
-            get
-            {
-                return model.enabled
+        public override bool active => model.enabled
                        && !context.interrupted;
-            }
-        }
 
         public override DepthTextureMode GetCameraFlags()
         {
             return DepthTextureMode.Depth;
         }
 
-        RenderTexture m_CoCHistory;
+        private RenderTexture m_CoCHistory;
 
         // Height of the 35mm full-frame format (36mm x 24mm)
-        const float k_FilmHeight = 0.024f;
+        private const float k_FilmHeight = 0.024f;
 
-        float CalculateFocalLength()
+        private float CalculateFocalLength()
         {
-            var settings = model.settings;
+            DepthOfFieldModel.Settings settings = model.settings;
 
             if (!settings.useCameraFov)
+            {
                 return settings.focalLength / 1000f;
+            }
 
             float fov = context.camera.fieldOfView * Mathf.Deg2Rad;
             return 0.5f * k_FilmHeight / Mathf.Tan(0.5f * fov);
         }
 
-        float CalculateMaxCoCRadius(int screenHeight)
+        private float CalculateMaxCoCRadius(int screenHeight)
         {
             // Estimate the allowable maximum radius of CoC from the kernel
             // size (the equation below was empirically derived).
@@ -64,39 +58,47 @@ namespace UnityEngine.PostProcessing
             return Mathf.Min(0.05f, radiusInPixels / screenHeight);
         }
 
-        bool CheckHistory(int width, int height)
+        private bool CheckHistory(int width, int height)
         {
             return m_CoCHistory != null && m_CoCHistory.IsCreated() &&
                 m_CoCHistory.width == width && m_CoCHistory.height == height;
         }
 
-        RenderTextureFormat SelectFormat(RenderTextureFormat primary, RenderTextureFormat secondary)
+        private RenderTextureFormat SelectFormat(RenderTextureFormat primary, RenderTextureFormat secondary)
         {
-            if (SystemInfo.SupportsRenderTextureFormat(primary)) return primary;
-            if (SystemInfo.SupportsRenderTextureFormat(secondary)) return secondary;
+            if (SystemInfo.SupportsRenderTextureFormat(primary))
+            {
+                return primary;
+            }
+
+            if (SystemInfo.SupportsRenderTextureFormat(secondary))
+            {
+                return secondary;
+            }
+
             return RenderTextureFormat.Default;
         }
 
         public void Prepare(RenderTexture source, Material uberMaterial, bool antialiasCoC, Vector2 taaJitter, float taaBlending)
         {
-            var settings = model.settings;
-            var colorFormat = RenderTextureFormat.DefaultHDR;
-            var cocFormat = SelectFormat(RenderTextureFormat.R8, RenderTextureFormat.RHalf);
+            DepthOfFieldModel.Settings settings = model.settings;
+            RenderTextureFormat colorFormat = RenderTextureFormat.DefaultHDR;
+            RenderTextureFormat cocFormat = SelectFormat(RenderTextureFormat.R8, RenderTextureFormat.RHalf);
 
             // Avoid using R8 on OSX with Metal. #896121, https://goo.gl/MgKqu6
-            #if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !UNITY_2017_1_OR_NEWER
+#if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !UNITY_2017_1_OR_NEWER
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Metal)
                 cocFormat = SelectFormat(RenderTextureFormat.RHalf, RenderTextureFormat.Default);
-            #endif
+#endif
 
             // Material setup
-            var f = CalculateFocalLength();
-            var s1 = Mathf.Max(settings.focusDistance, f);
-            var aspect = (float)source.width / source.height;
-            var coeff = f * f / (settings.aperture * (s1 - f) * k_FilmHeight * 2);
-            var maxCoC = CalculateMaxCoCRadius(source.height);
+            float f = CalculateFocalLength();
+            float s1 = Mathf.Max(settings.focusDistance, f);
+            float aspect = (float)source.width / source.height;
+            float coeff = f * f / (settings.aperture * (s1 - f) * k_FilmHeight * 2);
+            float maxCoC = CalculateMaxCoCRadius(source.height);
 
-            var material = context.materialFactory.Get(k_ShaderString);
+            Material material = context.materialFactory.Get(k_ShaderString);
             material.SetFloat(Uniforms._Distance, s1);
             material.SetFloat(Uniforms._LensCoeff, coeff);
             material.SetFloat(Uniforms._MaxCoC, maxCoC);
@@ -104,7 +106,7 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._RcpAspect, 1f / aspect);
 
             // CoC calculation pass
-            var rtCoC = context.renderTextureFactory.Get(context.width, context.height, 0, cocFormat, RenderTextureReadWrite.Linear);
+            RenderTexture rtCoC = context.renderTextureFactory.Get(context.width, context.height, 0, cocFormat, RenderTextureReadWrite.Linear);
             Graphics.Blit(null, rtCoC, material, 0);
 
             if (antialiasCoC)
@@ -112,25 +114,28 @@ namespace UnityEngine.PostProcessing
                 // CoC temporal filter pass
                 material.SetTexture(Uniforms._CoCTex, rtCoC);
 
-                var blend = CheckHistory(context.width, context.height) ? taaBlending : 0f;
+                float blend = CheckHistory(context.width, context.height) ? taaBlending : 0f;
                 material.SetVector(Uniforms._TaaParams, new Vector3(taaJitter.x, taaJitter.y, blend));
 
-                var rtFiltered = RenderTexture.GetTemporary(context.width, context.height, 0, cocFormat);
+                RenderTexture rtFiltered = RenderTexture.GetTemporary(context.width, context.height, 0, cocFormat);
                 Graphics.Blit(m_CoCHistory, rtFiltered, material, 1);
 
                 context.renderTextureFactory.Release(rtCoC);
-                if (m_CoCHistory != null) RenderTexture.ReleaseTemporary(m_CoCHistory);
+                if (m_CoCHistory != null)
+                {
+                    RenderTexture.ReleaseTemporary(m_CoCHistory);
+                }
 
                 m_CoCHistory = rtCoC = rtFiltered;
             }
 
             // Downsampling and prefiltering pass
-            var rt1 = context.renderTextureFactory.Get(context.width / 2, context.height / 2, 0, colorFormat);
+            RenderTexture rt1 = context.renderTextureFactory.Get(context.width / 2, context.height / 2, 0, colorFormat);
             material.SetTexture(Uniforms._CoCTex, rtCoC);
             Graphics.Blit(source, rt1, material, 2);
 
             // Bokeh simulation pass
-            var rt2 = context.renderTextureFactory.Get(context.width / 2, context.height / 2, 0, colorFormat);
+            RenderTexture rt2 = context.renderTextureFactory.Get(context.width / 2, context.height / 2, 0, colorFormat);
             Graphics.Blit(rt1, rt2, material, 3 + (int)settings.kernelSize);
 
             // Postfilter pass
@@ -157,7 +162,9 @@ namespace UnityEngine.PostProcessing
         public override void OnDisable()
         {
             if (m_CoCHistory != null)
+            {
                 RenderTexture.ReleaseTemporary(m_CoCHistory);
+            }
 
             m_CoCHistory = null;
         }

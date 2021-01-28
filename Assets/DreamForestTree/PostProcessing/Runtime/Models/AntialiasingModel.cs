@@ -156,16 +156,10 @@ namespace UnityEngine.PostProcessing
         {
             public FxaaPreset preset;
 
-            public static FxaaSettings defaultSettings
+            public static FxaaSettings defaultSettings => new FxaaSettings
             {
-                get
-                {
-                    return new FxaaSettings
-                    {
-                        preset = FxaaPreset.Default
-                    };
-                }
-            }
+                preset = FxaaPreset.Default
+            };
         }
         #endregion
 
@@ -189,19 +183,13 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 0.99f)]
             public float motionBlending;
 
-            public static TaaSettings defaultSettings
+            public static TaaSettings defaultSettings => new TaaSettings
             {
-                get
-                {
-                    return new TaaSettings
-                    {
-                        jitterSpread = 0.75f,
-                        sharpen = 0.3f,
-                        stationaryBlending = 0.95f,
-                        motionBlending = 0.85f
-                    };
-                }
-            }
+                jitterSpread = 0.75f,
+                sharpen = 0.3f,
+                stationaryBlending = 0.95f,
+                motionBlending = 0.85f
+            };
         }
         #endregion
 
@@ -212,26 +200,20 @@ namespace UnityEngine.PostProcessing
             public FxaaSettings fxaaSettings;
             public TaaSettings taaSettings;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        method = Method.Fxaa,
-                        fxaaSettings = FxaaSettings.defaultSettings,
-                        taaSettings = TaaSettings.defaultSettings
-                    };
-                }
-            }
+                method = Method.Fxaa,
+                fxaaSettings = FxaaSettings.defaultSettings,
+                taaSettings = TaaSettings.defaultSettings
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
         public override void Reset()

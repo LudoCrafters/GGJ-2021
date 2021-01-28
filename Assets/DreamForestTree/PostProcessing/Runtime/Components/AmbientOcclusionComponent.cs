@@ -6,7 +6,7 @@ namespace UnityEngine.PostProcessing
 
     public sealed class AmbientOcclusionComponent : PostProcessingComponentCommandBuffer<AmbientOcclusionModel>
     {
-        static class Uniforms
+        private static class Uniforms
         {
             internal static readonly int _Intensity         = Shader.PropertyToID("_Intensity");
             internal static readonly int _Radius            = Shader.PropertyToID("_Radius");
@@ -20,60 +20,58 @@ namespace UnityEngine.PostProcessing
             internal static readonly int _TempRT            = Shader.PropertyToID("_TempRT");
         }
 
-        const string k_BlitShaderString = "Hidden/Post FX/Blit";
-        const string k_ShaderString = "Hidden/Post FX/Ambient Occlusion";
-
-        readonly RenderTargetIdentifier[] m_MRT =
+        private const string k_BlitShaderString = "Hidden/Post FX/Blit";
+        private const string k_ShaderString = "Hidden/Post FX/Ambient Occlusion";
+        private readonly RenderTargetIdentifier[] m_MRT =
         {
             BuiltinRenderTextureType.GBuffer0, // Albedo, Occ
             BuiltinRenderTextureType.CameraTarget // Ambient
         };
 
-        enum OcclusionSource
+        private enum OcclusionSource
         {
             DepthTexture,
             DepthNormalsTexture,
             GBuffer
         }
 
-        OcclusionSource occlusionSource
+        private OcclusionSource occlusionSource
         {
             get
             {
                 if (context.isGBufferAvailable && !model.settings.forceForwardCompatibility)
+                {
                     return OcclusionSource.GBuffer;
+                }
 
                 if (model.settings.highPrecision && (!context.isGBufferAvailable || model.settings.forceForwardCompatibility))
+                {
                     return OcclusionSource.DepthTexture;
+                }
 
                 return OcclusionSource.DepthNormalsTexture;
             }
         }
 
-        bool ambientOnlySupported
-        {
-            get { return context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility; }
-        }
+        private bool ambientOnlySupported => context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility;
 
-        public override bool active
-        {
-            get
-            {
-                return model.enabled
+        public override bool active => model.enabled
                        && model.settings.intensity > 0f
                        && !context.interrupted;
-            }
-        }
 
         public override DepthTextureMode GetCameraFlags()
         {
-            var flags = DepthTextureMode.None;
+            DepthTextureMode flags = DepthTextureMode.None;
 
             if (occlusionSource == OcclusionSource.DepthTexture)
+            {
                 flags |= DepthTextureMode.Depth;
+            }
 
             if (occlusionSource != OcclusionSource.GBuffer)
+            {
                 flags |= DepthTextureMode.DepthNormals;
+            }
 
             return flags;
         }
@@ -92,12 +90,12 @@ namespace UnityEngine.PostProcessing
 
         public override void PopulateCommandBuffer(CommandBuffer cb)
         {
-            var settings = model.settings;
+            AmbientOcclusionModel.Settings settings = model.settings;
 
             // Material setup
-            var blitMaterial = context.materialFactory.Get(k_BlitShaderString);
+            Material blitMaterial = context.materialFactory.Get(k_BlitShaderString);
 
-            var material = context.materialFactory.Get(k_ShaderString);
+            Material material = context.materialFactory.Get(k_ShaderString);
             material.shaderKeywords = null;
             material.SetFloat(Uniforms._Intensity, settings.intensity);
             material.SetFloat(Uniforms._Radius, settings.radius);
@@ -134,14 +132,14 @@ namespace UnityEngine.PostProcessing
             const FilterMode kFilter = FilterMode.Bilinear;
 
             // AO buffer
-            var rtMask = Uniforms._OcclusionTexture1;
+            int rtMask = Uniforms._OcclusionTexture1;
             cb.GetTemporaryRT(rtMask, tw / ts, th / ts, 0, kFilter, kFormat, kRWMode);
 
             // AO estimation
-            cb.Blit((Texture)null, rtMask, material, (int)occlusionSource);
+            cb.Blit(null, rtMask, material, (int)occlusionSource);
 
             // Blur buffer
-            var rtBlur = Uniforms._OcclusionTexture2;
+            int rtBlur = Uniforms._OcclusionTexture2;
 
             // Separable blur (horizontal pass)
             cb.GetTemporaryRT(rtBlur, tw, th, 0, kFilter, kFormat, kRWMode);
@@ -169,7 +167,7 @@ namespace UnityEngine.PostProcessing
             }
             else
             {
-                var fbFormat = context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
+                RenderTextureFormat fbFormat = context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
 
                 int tempRT = Uniforms._TempRT;
                 cb.GetTemporaryRT(tempRT, context.width, context.height, 0, FilterMode.Bilinear, fbFormat);

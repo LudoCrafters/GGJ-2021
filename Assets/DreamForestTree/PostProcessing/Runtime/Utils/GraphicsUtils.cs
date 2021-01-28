@@ -4,27 +4,19 @@ namespace UnityEngine.PostProcessing
 
     public static class GraphicsUtils
     {
-        public static bool isLinearColorSpace
-        {
-            get { return QualitySettings.activeColorSpace == ColorSpace.Linear; }
-        }
+        public static bool isLinearColorSpace => QualitySettings.activeColorSpace == ColorSpace.Linear;
 
-        public static bool supportsDX11
-        {
-#if UNITY_WEBGL
-            get { return false; }
-#else
-            get { return SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders; }
-#endif
-        }
+        public static bool supportsDX11 => SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
 
-        static Texture2D s_WhiteTexture;
+        private static Texture2D s_WhiteTexture;
         public static Texture2D whiteTexture
         {
             get
             {
                 if (s_WhiteTexture != null)
+                {
                     return s_WhiteTexture;
+                }
 
                 s_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
                 s_WhiteTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 1f));
@@ -34,15 +26,17 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        static Mesh s_Quad;
+        private static Mesh s_Quad;
         public static Mesh quad
         {
             get
             {
                 if (s_Quad != null)
+                {
                     return s_Quad;
+                }
 
-                var vertices = new[]
+                Vector3[] vertices = new[]
                 {
                     new Vector3(-1f, -1f, 0f),
                     new Vector3( 1f,  1f, 0f),
@@ -50,7 +44,7 @@ namespace UnityEngine.PostProcessing
                     new Vector3(-1f,  1f, 0f)
                 };
 
-                var uvs = new[]
+                Vector2[] uvs = new[]
                 {
                     new Vector2(0f, 0f),
                     new Vector2(1f, 1f),
@@ -58,7 +52,7 @@ namespace UnityEngine.PostProcessing
                     new Vector2(0f, 1f)
                 };
 
-                var indices = new[] { 0, 1, 2, 1, 0, 3 };
+                int[] indices = new[] { 0, 1, 2, 1, 0, 3 };
 
                 s_Quad = new Mesh
                 {
@@ -96,7 +90,7 @@ namespace UnityEngine.PostProcessing
 
         public static void ClearAndBlit(Texture source, RenderTexture destination, Material material, int pass, bool clearColor = true, bool clearDepth = false)
         {
-            var oldRT = RenderTexture.active;
+            RenderTexture oldRT = RenderTexture.active;
             RenderTexture.active = destination;
 
             GL.Clear(false, clearColor, Color.clear);
@@ -127,9 +121,13 @@ namespace UnityEngine.PostProcessing
             {
 #if UNITY_EDITOR
                 if (Application.isPlaying)
+                {
                     UnityObject.Destroy(obj);
+                }
                 else
+                {
                     UnityObject.DestroyImmediate(obj);
+                }
 #else
                 UnityObject.Destroy(obj);
 #endif

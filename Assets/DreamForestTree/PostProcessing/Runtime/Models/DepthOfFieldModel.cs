@@ -31,28 +31,22 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Convolution kernel size of the bokeh filter, which determines the maximum radius of bokeh. It also affects the performance (the larger the kernel is, the longer the GPU time is required).")]
             public KernelSize kernelSize;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        focusDistance = 10f,
-                        aperture = 5.6f,
-                        focalLength = 50f,
-                        useCameraFov = false,
-                        kernelSize = KernelSize.Medium
-                    };
-                }
-            }
+                focusDistance = 10f,
+                aperture = 5.6f,
+                focalLength = 50f,
+                useCameraFov = false,
+                kernelSize = KernelSize.Medium
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
         public override void Reset()

@@ -26,35 +26,15 @@ namespace UnityEngine.PostProcessing
         }
 
         #region Helpers
-        public bool isGBufferAvailable
-        {
-            get { return camera.actualRenderingPath == RenderingPath.DeferredShading; }
-        }
+        public bool isGBufferAvailable => camera.actualRenderingPath == RenderingPath.DeferredShading;
 
-        public bool isHdr
-        {
-            // No UNITY_5_6_OR_NEWER defined in early betas of 5.6
-#if UNITY_5_6 || UNITY_5_6_OR_NEWER
-            get { return camera.allowHDR; }
-#else
-            get { return camera.hdr; }
-#endif
-        }
+        public bool isHdr => camera.allowHDR;
 
-        public int width
-        {
-            get { return camera.pixelWidth; }
-        }
+        public int width => camera.pixelWidth;
 
-        public int height
-        {
-            get { return camera.pixelHeight; }
-        }
+        public int height => camera.pixelHeight;
 
-        public Rect viewport
-        {
-            get { return camera.rect; } // Normalized coordinates
-        }
+        public Rect viewport => camera.rect;
         #endregion
     }
 }

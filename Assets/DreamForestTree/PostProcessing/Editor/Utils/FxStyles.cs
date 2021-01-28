@@ -103,9 +103,13 @@ namespace UnityEditor.PostProcessing
             checkerIcon = (Texture2D)EditorGUIUtility.LoadRequired("Icons/CheckerFloor.png");
 
             if (EditorGUIUtility.isProSkin)
+            {
                 paneOptionsIcon = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/DarkSkin/Images/pane options.png");
+            }
             else
+            {
                 paneOptionsIcon = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/LightSkin/Images/pane options.png");
+            }
         }
     }
 }

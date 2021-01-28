@@ -8,25 +8,20 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(MotionBlurModel))]
     public class MotionBlurModelEditor : PostProcessingModelEditor
     {
-        SerializedProperty m_ShutterAngle;
-        SerializedProperty m_SampleCount;
-        SerializedProperty m_FrameBlending;
+        private SerializedProperty m_ShutterAngle;
+        private SerializedProperty m_SampleCount;
+        private SerializedProperty m_FrameBlending;
+        private GraphDrawer m_GraphDrawer;
 
-        GraphDrawer m_GraphDrawer;
-
-        class GraphDrawer
+        private class GraphDrawer
         {
-            const float k_Height = 32f;
-
-            Texture m_BlendingIcon;
-
-            GUIStyle m_LowerCenterStyle;
-            GUIStyle m_MiddleCenterStyle;
-
-            Color m_ColorDark;
-            Color m_ColorGray;
-
-            Vector3[] m_RectVertices = new Vector3[4];
+            private const float k_Height = 32f;
+            private readonly Texture m_BlendingIcon;
+            private readonly GUIStyle m_LowerCenterStyle;
+            private readonly GUIStyle m_MiddleCenterStyle;
+            private Color m_ColorDark;
+            private Color m_ColorGray;
+            private readonly Vector3[] m_RectVertices = new Vector3[4];
 
             public GraphDrawer()
             {
@@ -49,14 +44,14 @@ namespace UnityEditor.PostProcessing
 
             public void DrawShutterGraph(float angle)
             {
-                var center = GUILayoutUtility.GetRect(128, k_Height).center;
+                Vector2 center = GUILayoutUtility.GetRect(128, k_Height).center;
 
                 // Parameters used to make transitions smooth.
-                var zeroWhenOff = Mathf.Min(1f, angle * 0.1f);
-                var zeroWhenFull = Mathf.Min(1f, (360f - angle) * 0.02f);
+                float zeroWhenOff = Mathf.Min(1f, angle * 0.1f);
+                float zeroWhenFull = Mathf.Min(1f, (360f - angle) * 0.02f);
 
                 // Shutter angle graph
-                var discCenter = center - new Vector2(k_Height * 2.4f, 0f);
+                Vector2 discCenter = center - new Vector2(k_Height * 2.4f, 0f);
                 // - exposure duration indicator
                 DrawDisc(discCenter, k_Height * Mathf.Lerp(0.5f, 0.38f, zeroWhenFull), m_ColorGray);
                 // - shutter disc
@@ -67,44 +62,48 @@ namespace UnityEditor.PostProcessing
                 DrawDisc(discCenter, zeroWhenOff, m_ColorGray);
 
                 // Shutter label (off/full)
-                var labelSize = new Vector2(k_Height, k_Height);
-                var labelOrigin = discCenter - labelSize * 0.5f;
-                var labelRect = new Rect(labelOrigin, labelSize);
+                Vector2 labelSize = new Vector2(k_Height, k_Height);
+                Vector2 labelOrigin = discCenter - labelSize * 0.5f;
+                Rect labelRect = new Rect(labelOrigin, labelSize);
 
                 if (Mathf.Approximately(angle, 0f))
+                {
                     GUI.Label(labelRect, "Off", m_MiddleCenterStyle);
+                }
                 else if (Mathf.Approximately(angle, 360f))
+                {
                     GUI.Label(labelRect, "Full", m_MiddleCenterStyle);
+                }
 
                 // Exposure time bar graph
-                var outerBarSize = new Vector2(4.75f, 0.5f) * k_Height;
-                var innerBarSize = outerBarSize;
+                Vector2 outerBarSize = new Vector2(4.75f, 0.5f) * k_Height;
+                Vector2 innerBarSize = outerBarSize;
                 innerBarSize.x *= angle / 360f;
 
-                var barCenter = center + new Vector2(k_Height * 0.9f, 0f);
-                var barOrigin = barCenter - outerBarSize * 0.5f;
+                Vector2 barCenter = center + new Vector2(k_Height * 0.9f, 0f);
+                Vector2 barOrigin = barCenter - outerBarSize * 0.5f;
 
                 DrawRect(barOrigin, outerBarSize, m_ColorDark);
                 DrawRect(barOrigin, innerBarSize, m_ColorGray);
 
-                var barText = "Exposure time = " + (angle / 3.6f).ToString("0") + "% of ΔT";
+                string barText = "Exposure time = " + (angle / 3.6f).ToString("0") + "% of ΔT";
                 GUI.Label(new Rect(barOrigin, outerBarSize), barText, m_MiddleCenterStyle);
             }
 
             public void DrawBlendingGraph(float strength)
             {
-                var center = GUILayoutUtility.GetRect(128, k_Height).center;
+                Vector2 center = GUILayoutUtility.GetRect(128, k_Height).center;
 
-                var iconSize = new Vector2(k_Height, k_Height);
-                var iconStride = new Vector2(k_Height * 0.9f, 0f);
-                var iconOrigin = center - iconSize * 0.5f - iconStride * 2f;
+                Vector2 iconSize = new Vector2(k_Height, k_Height);
+                Vector2 iconStride = new Vector2(k_Height * 0.9f, 0f);
+                Vector2 iconOrigin = center - iconSize * 0.5f - iconStride * 2f;
 
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
-                    var weight = BlendingWeight(strength, i / 60f);
-                    var rect = new Rect(iconOrigin + iconStride * i, iconSize);
+                    float weight = BlendingWeight(strength, i / 60f);
+                    Rect rect = new Rect(iconOrigin + iconStride * i, iconSize);
 
-                    var color = m_ColorGray;
+                    Color color = m_ColorGray;
                     color.a = weight;
 
                     GUI.color = color;
@@ -117,25 +116,27 @@ namespace UnityEditor.PostProcessing
             }
 
             // Weight function for multi frame blending
-            float BlendingWeight(float strength, float time)
+            private float BlendingWeight(float strength, float time)
             {
                 if (strength > 0f || Mathf.Approximately(time, 0f))
+                {
                     return Mathf.Exp(-time * Mathf.Lerp(80f, 10f, strength));
+                }
 
                 return 0;
             }
 
             // Draw a solid disc in the graph rect.
-            void DrawDisc(Vector2 center, float radius, Color fill)
+            private void DrawDisc(Vector2 center, float radius, Color fill)
             {
                 Handles.color = fill;
                 Handles.DrawSolidDisc(center, Vector3.forward, radius);
             }
 
             // Draw an arc in the graph rect.
-            void DrawArc(Vector2 center, float radius, float angle, Color fill)
+            private void DrawArc(Vector2 center, float radius, float angle, Color fill)
             {
-                var start = new Vector2(
+                Vector2 start = new Vector2(
                         -Mathf.Cos(Mathf.Deg2Rad * angle / 2f),
                         Mathf.Sin(Mathf.Deg2Rad * angle / 2f)
                         );
@@ -145,10 +146,10 @@ namespace UnityEditor.PostProcessing
             }
 
             // Draw a rectangle in the graph rect.
-            void DrawRect(Vector2 origin, Vector2 size, Color color)
+            private void DrawRect(Vector2 origin, Vector2 size, Color color)
             {
-                var p0 = origin;
-                var p1 = origin + size;
+                Vector2 p0 = origin;
+                Vector2 p1 = origin + size;
 
                 m_RectVertices[0] = p0;
                 m_RectVertices[1] = new Vector2(p1.x, p0.y);
@@ -170,7 +171,9 @@ namespace UnityEditor.PostProcessing
         public override void OnInspectorGUI()
         {
             if (m_GraphDrawer == null)
+            {
                 m_GraphDrawer = new GraphDrawer();
+            }
 
             EditorGUILayout.LabelField("Shutter Speed Simulation", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
@@ -188,8 +191,9 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_FrameBlending);
 
             if (fbValue > 0f)
+            {
                 EditorGUILayout.HelpBox("Multi-Frame Blending lowers precision of the final picture for optimization purposes.", MessageType.Info);
-
+            }
 
             EditorGUI.indentLevel--;
         }

@@ -88,48 +88,42 @@ namespace UnityEngine.PostProcessing
             public IntensitySettings intensity;
             public ScreenEdgeMask screenEdgeMask;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
+                reflection = new ReflectionSettings
                 {
-                    return new Settings
-                    {
-                        reflection = new ReflectionSettings
-                        {
-                            blendType = SSRReflectionBlendType.PhysicallyBased,
-                            reflectionQuality = SSRResolution.Low,
-                            maxDistance = 100f,
-                            iterationCount = 256,
-                            stepSize = 3,
-                            widthModifier = 0.5f,
-                            reflectionBlur = 1f,
-                            reflectBackfaces = false
-                        },
+                    blendType = SSRReflectionBlendType.PhysicallyBased,
+                    reflectionQuality = SSRResolution.Low,
+                    maxDistance = 100f,
+                    iterationCount = 256,
+                    stepSize = 3,
+                    widthModifier = 0.5f,
+                    reflectionBlur = 1f,
+                    reflectBackfaces = false
+                },
 
-                        intensity = new IntensitySettings
-                        {
-                            reflectionMultiplier = 1f,
-                            fadeDistance = 100f,
+                intensity = new IntensitySettings
+                {
+                    reflectionMultiplier = 1f,
+                    fadeDistance = 100f,
 
-                            fresnelFade = 1f,
-                            fresnelFadePower = 1f,
-                        },
+                    fresnelFade = 1f,
+                    fresnelFadePower = 1f,
+                },
 
-                        screenEdgeMask = new ScreenEdgeMask
-                        {
-                            intensity = 0.03f
-                        }
-                    };
+                screenEdgeMask = new ScreenEdgeMask
+                {
+                    intensity = 0.03f
                 }
-            }
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
         public override void Reset()

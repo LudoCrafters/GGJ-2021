@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class FreeCam : MonoBehaviour 
 {
@@ -7,15 +6,15 @@ public class FreeCam : MonoBehaviour
     public float speedFast = 45f;
     public float mouseSensX = 2f;
     public float mouseSensY = 2f;
-    float rotY;
-    float speed;
-    
-	void Start()
+    private float rotY;
+    private float speed;
+
+    private void Start()
 	{
         //Cursor.visible = false;
 	}
-   
-	void Update()
+
+    private void Update()
 	{
         if (Input.GetMouseButton(0))
         {
@@ -34,15 +33,29 @@ public class FreeCam : MonoBehaviour
         float side  = Input.GetAxis("Horizontal");
         if (forward != 0f)  
         {
-            if (Input.GetKey(KeyCode.LeftShift)) speed = speedFast;
-            else speed = speedNormal;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                speed = speedFast;
+            }
+            else
+            {
+                speed = speedNormal;
+            }
+
             Vector3 vect = new Vector3(0f, 0f, forward * speed * Time.deltaTime);
             transform.localPosition += transform.localRotation * vect;
         }
         if (side != 0f) 
         {
-            if (Input.GetKey(KeyCode.LeftShift)) speed = speedFast;
-            else speed = speedNormal;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                speed = speedFast;
+            }
+            else
+            {
+                speed = speedNormal;
+            }
+
             Vector3 vect = new Vector3(side * speed * Time.deltaTime, 0f, 0f);
             transform.localPosition += transform.localRotation * vect;
         }

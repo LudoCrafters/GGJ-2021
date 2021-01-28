@@ -2,7 +2,7 @@ namespace UnityEngine.PostProcessing
 {
     public sealed class VignetteComponent : PostProcessingComponentRenderTexture<VignetteModel>
     {
-        static class Uniforms
+        private static class Uniforms
         {
             internal static readonly int _Vignette_Color    = Shader.PropertyToID("_Vignette_Color");
             internal static readonly int _Vignette_Center   = Shader.PropertyToID("_Vignette_Center");
@@ -11,18 +11,12 @@ namespace UnityEngine.PostProcessing
             internal static readonly int _Vignette_Opacity  = Shader.PropertyToID("_Vignette_Opacity");
         }
 
-        public override bool active
-        {
-            get
-            {
-                return model.enabled
+        public override bool active => model.enabled
                        && !context.interrupted;
-            }
-        }
 
         public override void Prepare(Material uberMaterial)
         {
-            var settings = model.settings;
+            VignetteModel.Settings settings = model.settings;
             uberMaterial.SetColor(Uniforms._Vignette_Color, settings.color);
 
             if (settings.mode == VignetteModel.Mode.Classic)

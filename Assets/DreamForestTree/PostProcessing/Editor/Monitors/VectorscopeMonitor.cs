@@ -6,13 +6,12 @@ namespace UnityEditor.PostProcessing
 {
     public class VectorscopeMonitor : PostProcessingMonitor
     {
-        static GUIContent s_MonitorTitle = new GUIContent("Vectorscope");
-
-        ComputeShader m_ComputeShader;
-        ComputeBuffer m_Buffer;
-        Material m_Material;
-        RenderTexture m_VectorscopeTexture;
-        Rect m_MonitorAreaRect;
+        private static readonly GUIContent s_MonitorTitle = new GUIContent("Vectorscope");
+        private readonly ComputeShader m_ComputeShader;
+        private ComputeBuffer m_Buffer;
+        private Material m_Material;
+        private RenderTexture m_VectorscopeTexture;
+        private Rect m_MonitorAreaRect;
 
         public VectorscopeMonitor()
         {
@@ -25,7 +24,9 @@ namespace UnityEditor.PostProcessing
             GraphicsUtils.Destroy(m_VectorscopeTexture);
 
             if (m_Buffer != null)
+            {
                 m_Buffer.Release();
+            }
 
             m_Material = null;
             m_VectorscopeTexture = null;
@@ -70,7 +71,9 @@ namespace UnityEditor.PostProcessing
             {
                 // If m_MonitorAreaRect isn't set the preview was just opened so refresh the render to get the vectoscope data
                 if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0))
+                {
                     InternalEditorUtility.RepaintAllViews();
+                }
 
                 // Sizing
                 float size = 0f;
@@ -98,20 +101,20 @@ namespace UnityEditor.PostProcessing
                 {
                     m_Material.SetFloat("_Exposure", m_MonitorSettings.vectorscopeExposure);
 
-                    var oldActive = RenderTexture.active;
+                    RenderTexture oldActive = RenderTexture.active;
                     Graphics.Blit(null, m_VectorscopeTexture, m_Material, m_MonitorSettings.vectorscopeShowBackground ? 0 : 1);
                     RenderTexture.active = oldActive;
 
                     Graphics.DrawTexture(m_MonitorAreaRect, m_VectorscopeTexture);
 
-                    var color = Color.white;
+                    Color color = Color.white;
                     const float kTickSize = 10f;
                     const int kTickCount = 24;
 
                     float radius = m_MonitorAreaRect.width / 2f;
                     float midX = m_MonitorAreaRect.x + radius;
                     float midY = m_MonitorAreaRect.y + radius;
-                    var center = new Vector2(midX, midY);
+                    Vector2 center = new Vector2(midX, midY);
 
                     // Cross
                     color.a *= 0.5f;
@@ -127,22 +130,22 @@ namespace UnityEditor.PostProcessing
                         Handles.color = color;
                         for (int i = 0; i < kTickCount; i++)
                         {
-                            float a = (float)i / (float)kTickCount;
+                            float a = i / (float)kTickCount;
                             float theta = a * (Mathf.PI * 2f);
                             float tx = Mathf.Cos(theta + (Mathf.PI / 2f));
                             float ty = Mathf.Sin(theta - (Mathf.PI / 2f));
-                            var innerVec = center + new Vector2(tx, ty) * (radius - kTickSize);
-                            var outerVec = center + new Vector2(tx, ty) * radius;
+                            Vector2 innerVec = center + new Vector2(tx, ty) * (radius - kTickSize);
+                            Vector2 outerVec = center + new Vector2(tx, ty) * radius;
                             Handles.DrawAAPolyLine(3f, innerVec, outerVec);
                         }
 
                         // Labels (where saturation reaches 75%)
                         color.a = 1f;
-                        var oldColor = GUI.color;
+                        Color oldColor = GUI.color;
                         GUI.color = color * 2f;
 
-                        var point = new Vector2(-0.254f, -0.750f) * radius + center;
-                        var rect = new Rect(point.x - 10f, point.y - 10f, 20f, 20f);
+                        Vector2 point = new Vector2(-0.254f, -0.750f) * radius + center;
+                        Rect rect = new Rect(point.x - 10f, point.y - 10f, 20f, 20f);
                         GUI.Label(rect, "[R]", FxStyles.tickStyleCenter);
 
                         point = new Vector2(-0.497f, 0.629f) * radius + center;
@@ -173,28 +176,32 @@ namespace UnityEditor.PostProcessing
         public override void OnFrameData(RenderTexture source)
         {
             if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay)
+            {
                 return;
+            }
 
             if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0))
+            {
                 return;
+            }
 
-            float ratio = (float)source.width / (float)source.height;
+            float ratio = source.width / (float)source.height;
             int h = 384;
             int w = Mathf.FloorToInt(h * ratio);
 
-            var rt = RenderTexture.GetTemporary(w, h, 0, source.format);
+            RenderTexture rt = RenderTexture.GetTemporary(w, h, 0, source.format);
             Graphics.Blit(source, rt);
             ComputeVectorscope(rt);
             m_BaseEditor.Repaint();
             RenderTexture.ReleaseTemporary(rt);
         }
 
-        void CreateBuffer(int width, int height)
+        private void CreateBuffer(int width, int height)
         {
             m_Buffer = new ComputeBuffer(width * height, sizeof(uint));
         }
 
-        void ComputeVectorscope(RenderTexture source)
+        private void ComputeVectorscope(RenderTexture source)
         {
             if (m_Buffer == null)
             {
@@ -206,7 +213,7 @@ namespace UnityEditor.PostProcessing
                 CreateBuffer(source.width, source.height);
             }
 
-            var cs = m_ComputeShader;
+            ComputeShader cs = m_ComputeShader;
 
             int kernel = cs.FindKernel("KVectorscopeClear");
             cs.SetBuffer(kernel, "_Vectorscope", m_Buffer);
@@ -232,7 +239,9 @@ namespace UnityEditor.PostProcessing
             }
 
             if (m_Material == null)
+            {
                 m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Vectorscope Render")) { hideFlags = HideFlags.DontSave };
+            }
 
             m_Material.SetBuffer("_Vectorscope", m_Buffer);
             m_Material.SetVector("_Size", new Vector2(m_VectorscopeTexture.width, m_VectorscopeTexture.height));

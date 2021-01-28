@@ -8,8 +8,8 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(UserLutModel))]
     public class UserLutModelEditor : PostProcessingModelEditor
     {
-        SerializedProperty m_Texture;
-        SerializedProperty m_Contribution;
+        private SerializedProperty m_Texture;
+        private SerializedProperty m_Contribution;
 
         public override void OnEnable()
         {
@@ -19,12 +19,12 @@ namespace UnityEditor.PostProcessing
 
         public override void OnInspectorGUI()
         {
-            var lut = (target as UserLutModel).settings.lut;
+            Texture2D lut = (target as UserLutModel).settings.lut;
 
             // Checks import settings on the lut, offers to fix them if invalid
             if (lut != null)
             {
-                var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lut));
+                TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lut));
 
                 if (importer != null) // Fails when using an internal texture
                 {
@@ -68,7 +68,7 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_Contribution);
         }
 
-        void SetLUTImportSettings(TextureImporter importer)
+        private void SetLUTImportSettings(TextureImporter importer)
         {
 #if UNITY_5_5_OR_NEWER
             importer.textureType = TextureImporterType.Default;

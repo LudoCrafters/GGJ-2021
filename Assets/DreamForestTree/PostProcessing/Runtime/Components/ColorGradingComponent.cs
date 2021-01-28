@@ -4,7 +4,7 @@ namespace UnityEngine.PostProcessing
 
     public sealed class ColorGradingComponent : PostProcessingComponentRenderTexture<ColorGradingModel>
     {
-        static class Uniforms
+        private static class Uniforms
         {
             internal static readonly int _LutParams                = Shader.PropertyToID("_LutParams");
             internal static readonly int _NeutralTonemapperParams1 = Shader.PropertyToID("_NeutralTonemapperParams1");
@@ -28,33 +28,26 @@ namespace UnityEngine.PostProcessing
             internal static readonly int _ExposureEV               = Shader.PropertyToID("_ExposureEV");
         }
 
-        const int k_InternalLogLutSize = 32;
-        const int k_CurvePrecision = 128;
-        const float k_CurveStep = 1f / k_CurvePrecision;
+        private const int k_InternalLogLutSize = 32;
+        private const int k_CurvePrecision = 128;
+        private const float k_CurveStep = 1f / k_CurvePrecision;
+        private Texture2D m_GradingCurves;
+        private readonly Color[] m_pixels = new Color[k_CurvePrecision * 2];
 
-        Texture2D m_GradingCurves;
-        Color[] m_pixels = new Color[k_CurvePrecision * 2];
-
-        public override bool active
-        {
-            get
-            {
-                return model.enabled
+        public override bool active => model.enabled
                        && !context.interrupted;
-            }
-        }
 
         // An analytical model of chromaticity of the standard illuminant, by Judd et al.
         // http://en.wikipedia.org/wiki/Standard_illuminant#Illuminant_series_D
         // Slightly modifed to adjust it with the D65 white point (x=0.31271, y=0.32902).
-        float StandardIlluminantY(float x)
+        private float StandardIlluminantY(float x)
         {
             return 2.87f * x - 3f * x * x - 0.27509507f;
         }
 
         // CIE xy chromaticity to CAT02 LMS.
         // http://en.wikipedia.org/wiki/LMS_color_space#CAT02
-        Vector3 CIExyToLMS(float x, float y)
+        private Vector3 CIExyToLMS(float x, float y)
         {
             float Y = 1f;
             float X = Y * x / y;
@@ -67,7 +60,7 @@ namespace UnityEngine.PostProcessing
             return new Vector3(L, M, S);
         }
 
-        Vector3 CalculateColorBalance(float temperature, float tint)
+        private Vector3 CalculateColorBalance(float temperature, float tint)
         {
             // Range ~[-1.8;1.8] ; using higher ranges is unsafe
             float t1 = temperature / 55f;
@@ -79,17 +72,19 @@ namespace UnityEngine.PostProcessing
             float y = StandardIlluminantY(x) + t2 * 0.05f;
 
             // Calculate the coefficients in the LMS space.
-            var w1 = new Vector3(0.949237f, 1.03542f, 1.08728f); // D65 white point
-            var w2 = CIExyToLMS(x, y);
+            Vector3 w1 = new Vector3(0.949237f, 1.03542f, 1.08728f); // D65 white point
+            Vector3 w2 = CIExyToLMS(x, y);
             return new Vector3(w1.x / w2.x, w1.y / w2.y, w1.z / w2.z);
         }
 
-        static Color NormalizeColor(Color c)
+        private static Color NormalizeColor(Color c)
         {
             float sum = (c.r + c.g + c.b) / 3f;
 
             if (Mathf.Approximately(sum, 0f))
+            {
                 return new Color(1f, 1f, 1f, c.a);
+            }
 
             return new Color
                    {
@@ -100,7 +95,7 @@ namespace UnityEngine.PostProcessing
                    };
         }
 
-        static Vector3 ClampVector(Vector3 v, float min, float max)
+        private static Vector3 ClampVector(Vector3 v, float min, float max)
         {
             return new Vector3(
                 Mathf.Clamp(v.x, min, max),
@@ -113,7 +108,7 @@ namespace UnityEngine.PostProcessing
         {
             const float kLiftScale = 0.1f;
 
-            var nLift = NormalizeColor(lift);
+            Color nLift = NormalizeColor(lift);
             float avgLift = (nLift.r + nLift.g + nLift.b) / 3f;
 
             // Getting some artifacts when going into the negatives using a very low offset (lift.a) with non ACES-tonemapping
@@ -129,7 +124,7 @@ namespace UnityEngine.PostProcessing
             const float kGammaScale = 0.5f;
             const float kMinGamma = 0.01f;
 
-            var nGamma = NormalizeColor(gamma);
+            Color nGamma = NormalizeColor(gamma);
             float avgGamma = (nGamma.r + nGamma.g + nGamma.b) / 3f;
 
             gamma.a *= gamma.a < 0f ? 0.8f : 5f;
@@ -148,7 +143,7 @@ namespace UnityEngine.PostProcessing
         {
             const float kGainScale = 0.5f;
 
-            var nGain = NormalizeColor(gain);
+            Color nGain = NormalizeColor(gain);
             float avgGain = (nGain.r + nGain.g + nGain.b) / 3f;
 
             gain.a *= gain.a > 0f ? 3f : 1f;
@@ -170,7 +165,7 @@ namespace UnityEngine.PostProcessing
         {
             const float kSlopeScale = 0.1f;
 
-            var nSlope = NormalizeColor(slope);
+            Color nSlope = NormalizeColor(slope);
             float avgSlope = (nSlope.r + nSlope.g + nSlope.b) / 3f;
 
             slope.a *= 0.5f;
@@ -186,7 +181,7 @@ namespace UnityEngine.PostProcessing
             const float kPowerScale = 0.1f;
             const float minPower = 0.01f;
 
-            var nPower = NormalizeColor(power);
+            Color nPower = NormalizeColor(power);
             float avgPower = (nPower.r + nPower.g + nPower.b) / 3f;
 
             power.a *= 0.5f;
@@ -205,7 +200,7 @@ namespace UnityEngine.PostProcessing
         {
             const float kOffsetScale = 0.05f;
 
-            var nOffset = NormalizeColor(offset);
+            Color nOffset = NormalizeColor(offset);
             float avgOffset = (nOffset.r + nOffset.g + nOffset.b) / 3f;
 
             offset.a *= 0.5f;
@@ -223,15 +218,17 @@ namespace UnityEngine.PostProcessing
             outOffset = GetOffsetValue(offset);
         }
 
-        TextureFormat GetCurveFormat()
+        private TextureFormat GetCurveFormat()
         {
             if (SystemInfo.SupportsTextureFormat(TextureFormat.RGBAHalf))
+            {
                 return TextureFormat.RGBAHalf;
+            }
 
             return TextureFormat.RGBA32;
         }
 
-        Texture2D GetCurveTexture()
+        private Texture2D GetCurveTexture()
         {
             if (m_GradingCurves == null)
             {
@@ -245,7 +242,7 @@ namespace UnityEngine.PostProcessing
                 };
             }
 
-            var curves = model.settings.curves;
+            ColorGradingModel.CurvesSettings curves = model.settings.curves;
             curves.hueVShue.Cache();
             curves.hueVSsat.Cache();
 
@@ -274,22 +271,24 @@ namespace UnityEngine.PostProcessing
             return m_GradingCurves;
         }
 
-        bool IsLogLutValid(RenderTexture lut)
+        private bool IsLogLutValid(RenderTexture lut)
         {
             return lut != null && lut.IsCreated() && lut.height == k_InternalLogLutSize;
         }
 
-        RenderTextureFormat GetLutFormat()
+        private RenderTextureFormat GetLutFormat()
         {
             if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
+            {
                 return RenderTextureFormat.ARGBHalf;
+            }
 
             return RenderTextureFormat.ARGB32;
         }
 
-        void GenerateLut()
+        private void GenerateLut()
         {
-            var settings = model.settings;
+            ColorGradingModel.Settings settings = model.settings;
 
             if (!IsLogLutValid(model.bakedLut))
             {
@@ -305,7 +304,7 @@ namespace UnityEngine.PostProcessing
                 };
             }
 
-            var lutMaterial = context.materialFactory.Get("Hidden/Post FX/Lut Generator");
+            Material lutMaterial = context.materialFactory.Get("Hidden/Post FX/Lut Generator");
             lutMaterial.SetVector(Uniforms._LutParams, new Vector4(
                     k_InternalLogLutSize,
                     0.5f / (k_InternalLogLutSize * k_InternalLogLutSize),
@@ -316,7 +315,7 @@ namespace UnityEngine.PostProcessing
             // Tonemapping
             lutMaterial.shaderKeywords = null;
 
-            var tonemapping = settings.tonemapping;
+            ColorGradingModel.TonemappingSettings tonemapping = settings.tonemapping;
             switch (tonemapping.tonemapper)
             {
                 case ColorGradingModel.Tonemapper.Neutral:
@@ -359,12 +358,11 @@ namespace UnityEngine.PostProcessing
             lutMaterial.SetVector(Uniforms._Balance, CalculateColorBalance(settings.basic.temperature, settings.basic.tint));
 
             // Lift / Gamma / Gain
-            Vector3 lift, gamma, gain;
             CalculateLiftGammaGain(
                 settings.colorWheels.linear.lift,
                 settings.colorWheels.linear.gamma,
                 settings.colorWheels.linear.gain,
-                out lift, out gamma, out gain
+                out Vector3 lift, out Vector3 gamma, out Vector3 gain
                 );
 
             lutMaterial.SetVector(Uniforms._Lift, lift);
@@ -372,12 +370,11 @@ namespace UnityEngine.PostProcessing
             lutMaterial.SetVector(Uniforms._Gain, gain);
 
             // Slope / Power / Offset
-            Vector3 slope, power, offset;
             CalculateSlopePowerOffset(
                 settings.colorWheels.log.slope,
                 settings.colorWheels.log.power,
                 settings.colorWheels.log.offset,
-                out slope, out power, out offset
+                out Vector3 slope, out Vector3 power, out Vector3 offset
                 );
 
             lutMaterial.SetVector(Uniforms._Slope, slope);
@@ -410,7 +407,7 @@ namespace UnityEngine.PostProcessing
                 : "COLOR_GRADING"
                 );
 
-            var bakedLut = model.bakedLut;
+            RenderTexture bakedLut = model.bakedLut;
             uberMaterial.SetTexture(Uniforms._LogLut, bakedLut);
             uberMaterial.SetVector(Uniforms._LogLut_Params, new Vector3(1f / bakedLut.width, 1f / bakedLut.height, bakedLut.height - 1f));
 
@@ -420,8 +417,8 @@ namespace UnityEngine.PostProcessing
 
         public void OnGUI()
         {
-            var bakedLut = model.bakedLut;
-            var rect = new Rect(context.viewport.x * Screen.width + 8f, 8f, bakedLut.width, bakedLut.height);
+            RenderTexture bakedLut = model.bakedLut;
+            Rect rect = new Rect(context.viewport.x * Screen.width + 8f, 8f, bakedLut.width, bakedLut.height);
             GUI.DrawTexture(rect, bakedLut);
         }
 

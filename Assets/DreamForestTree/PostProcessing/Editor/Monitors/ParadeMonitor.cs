@@ -6,13 +6,12 @@ namespace UnityEditor.PostProcessing
 {
     public class ParadeMonitor : PostProcessingMonitor
     {
-        static GUIContent s_MonitorTitle = new GUIContent("Parade");
-
-        ComputeShader m_ComputeShader;
-        ComputeBuffer m_Buffer;
-        Material m_Material;
-        RenderTexture m_WaveformTexture;
-        Rect m_MonitorAreaRect;
+        private static readonly GUIContent s_MonitorTitle = new GUIContent("Parade");
+        private readonly ComputeShader m_ComputeShader;
+        private ComputeBuffer m_Buffer;
+        private Material m_Material;
+        private RenderTexture m_WaveformTexture;
+        private Rect m_MonitorAreaRect;
 
         public ParadeMonitor()
         {
@@ -25,7 +24,9 @@ namespace UnityEditor.PostProcessing
             GraphicsUtils.Destroy(m_WaveformTexture);
 
             if (m_Buffer != null)
+            {
                 m_Buffer.Release();
+            }
 
             m_Material = null;
             m_WaveformTexture = null;
@@ -67,7 +68,9 @@ namespace UnityEditor.PostProcessing
             {
                 // If m_MonitorAreaRect isn't set the preview was just opened so refresh the render to get the waveform data
                 if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0))
+                {
                     InternalEditorUtility.RepaintAllViews();
+                }
 
                 // Sizing
                 float width = m_WaveformTexture != null
@@ -87,13 +90,13 @@ namespace UnityEditor.PostProcessing
                 {
                     m_Material.SetFloat("_Exposure", m_MonitorSettings.paradeExposure);
 
-                    var oldActive = RenderTexture.active;
+                    RenderTexture oldActive = RenderTexture.active;
                     Graphics.Blit(null, m_WaveformTexture, m_Material, 0);
                     RenderTexture.active = oldActive;
 
                     Graphics.DrawTexture(m_MonitorAreaRect, m_WaveformTexture);
 
-                    var color = Color.white;
+                    Color color = Color.white;
                     const float kTickSize = 5f;
 
                     // Rect, lines & ticks points
@@ -103,31 +106,31 @@ namespace UnityEditor.PostProcessing
                     //  L           G
                     //  K T J S I R H
 
-                    var A = new Vector3(m_MonitorAreaRect.x, m_MonitorAreaRect.y);
-                    var D = new Vector3(A.x + m_MonitorAreaRect.width + 1f, m_MonitorAreaRect.y);
-                    var H = new Vector3(D.x, D.y + m_MonitorAreaRect.height + 1f);
-                    var K = new Vector3(A.x, H.y);
+                    Vector3 A = new Vector3(m_MonitorAreaRect.x, m_MonitorAreaRect.y);
+                    Vector3 D = new Vector3(A.x + m_MonitorAreaRect.width + 1f, m_MonitorAreaRect.y);
+                    Vector3 H = new Vector3(D.x, D.y + m_MonitorAreaRect.height + 1f);
+                    Vector3 K = new Vector3(A.x, H.y);
 
-                    var F = new Vector3(D.x, D.y + (H.y - D.y) / 2f);
-                    var M = new Vector3(A.x, A.y + (K.y - A.y) / 2f);
+                    Vector3 F = new Vector3(D.x, D.y + (H.y - D.y) / 2f);
+                    Vector3 M = new Vector3(A.x, A.y + (K.y - A.y) / 2f);
 
-                    var B = new Vector3(A.x + (D.x - A.x) / 3f, A.y);
-                    var C = new Vector3(A.x + (D.x - A.x) * 2f / 3f, A.y);
-                    var I = new Vector3(K.x + (H.x - K.x) * 2f / 3f, K.y);
-                    var J = new Vector3(K.x + (H.x - K.x) / 3f, K.y);
+                    Vector3 B = new Vector3(A.x + (D.x - A.x) / 3f, A.y);
+                    Vector3 C = new Vector3(A.x + (D.x - A.x) * 2f / 3f, A.y);
+                    Vector3 I = new Vector3(K.x + (H.x - K.x) * 2f / 3f, K.y);
+                    Vector3 J = new Vector3(K.x + (H.x - K.x) / 3f, K.y);
 
-                    var N = new Vector3(A.x, A.y + (M.y - A.y) / 2f);
-                    var L = new Vector3(A.x, M.y + (K.y - M.y) / 2f);
-                    var E = new Vector3(D.x, D.y + (F.y - D.y) / 2f);
-                    var G = new Vector3(D.x, F.y + (H.y - F.y) / 2f);
+                    Vector3 N = new Vector3(A.x, A.y + (M.y - A.y) / 2f);
+                    Vector3 L = new Vector3(A.x, M.y + (K.y - M.y) / 2f);
+                    Vector3 E = new Vector3(D.x, D.y + (F.y - D.y) / 2f);
+                    Vector3 G = new Vector3(D.x, F.y + (H.y - F.y) / 2f);
 
-                    var O = new Vector3(A.x + (B.x - A.x) / 2f, A.y);
-                    var P = new Vector3(B.x + (C.x - B.x) / 2f, B.y);
-                    var Q = new Vector3(C.x + (D.x - C.x) / 2f, C.y);
+                    Vector3 O = new Vector3(A.x + (B.x - A.x) / 2f, A.y);
+                    Vector3 P = new Vector3(B.x + (C.x - B.x) / 2f, B.y);
+                    Vector3 Q = new Vector3(C.x + (D.x - C.x) / 2f, C.y);
 
-                    var R = new Vector3(I.x + (H.x - I.x) / 2f, I.y);
-                    var S = new Vector3(J.x + (I.x - J.x) / 2f, J.y);
-                    var T = new Vector3(K.x + (J.x - K.x) / 2f, K.y);
+                    Vector3 R = new Vector3(I.x + (H.x - I.x) / 2f, I.y);
+                    Vector3 S = new Vector3(J.x + (I.x - J.x) / 2f, J.y);
+                    Vector3 T = new Vector3(K.x + (J.x - K.x) / 2f, K.y);
 
                     // Borders
                     Handles.color = color;
@@ -185,28 +188,32 @@ namespace UnityEditor.PostProcessing
         public override void OnFrameData(RenderTexture source)
         {
             if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay)
+            {
                 return;
+            }
 
             if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0))
+            {
                 return;
+            }
 
-            float ratio = ((float)source.width / (float)source.height) / 3f;
+            float ratio = (source.width / (float)source.height) / 3f;
             int h = 384;
             int w = Mathf.FloorToInt(h * ratio);
 
-            var rt = RenderTexture.GetTemporary(w, h, 0, source.format);
+            RenderTexture rt = RenderTexture.GetTemporary(w, h, 0, source.format);
             Graphics.Blit(source, rt);
             ComputeWaveform(rt);
             m_BaseEditor.Repaint();
             RenderTexture.ReleaseTemporary(rt);
         }
 
-        void CreateBuffer(int width, int height)
+        private void CreateBuffer(int width, int height)
         {
             m_Buffer = new ComputeBuffer(width * height, sizeof(uint) << 2);
         }
 
-        void ComputeWaveform(RenderTexture source)
+        private void ComputeWaveform(RenderTexture source)
         {
             if (m_Buffer == null)
             {
@@ -218,11 +225,11 @@ namespace UnityEditor.PostProcessing
                 CreateBuffer(source.width, source.height);
             }
 
-            var channels = m_MonitorSettings.waveformY
+            Vector4 channels = m_MonitorSettings.waveformY
                 ? new Vector4(0f, 0f, 0f, 1f)
                 : new Vector4(m_MonitorSettings.waveformR ? 1f : 0f, m_MonitorSettings.waveformG ? 1f : 0f, m_MonitorSettings.waveformB ? 1f : 0f, 0f);
 
-            var cs = m_ComputeShader;
+            ComputeShader cs = m_ComputeShader;
 
             int kernel = cs.FindKernel("KWaveformClear");
             cs.SetBuffer(kernel, "_Waveform", m_Buffer);
@@ -247,7 +254,9 @@ namespace UnityEditor.PostProcessing
             }
 
             if (m_Material == null)
+            {
                 m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Parade Render")) { hideFlags = HideFlags.DontSave };
+            }
 
             m_Material.SetBuffer("_Waveform", m_Buffer);
             m_Material.SetVector("_Size", new Vector2(m_WaveformTexture.width, m_WaveformTexture.height));

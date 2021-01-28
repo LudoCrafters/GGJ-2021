@@ -45,23 +45,17 @@ namespace UnityEngine.PostProcessing
             [Range(1f, 10f)]
             public float neutralWhiteClip;
 
-            public static TonemappingSettings defaultSettings
+            public static TonemappingSettings defaultSettings => new TonemappingSettings
             {
-                get
-                {
-                    return new TonemappingSettings
-                    {
-                        tonemapper = Tonemapper.Neutral,
+                tonemapper = Tonemapper.Neutral,
 
-                        neutralBlackIn = 0.02f,
-                        neutralWhiteIn = 10f,
-                        neutralBlackOut = 0f,
-                        neutralWhiteOut = 10f,
-                        neutralWhiteLevel = 5.3f,
-                        neutralWhiteClip = 10f
-                    };
-                }
-            }
+                neutralBlackIn = 0.02f,
+                neutralWhiteIn = 10f,
+                neutralBlackOut = 0f,
+                neutralWhiteOut = 10f,
+                neutralWhiteLevel = 5.3f,
+                neutralWhiteClip = 10f
+            };
         }
 
         [Serializable]
@@ -85,23 +79,17 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 2f), Tooltip("Expands or shrinks the overall range of tonal values.")]
             public float contrast;
 
-            public static BasicSettings defaultSettings
+            public static BasicSettings defaultSettings => new BasicSettings
             {
-                get
-                {
-                    return new BasicSettings
-                    {
-                        postExposure = 0f,
+                postExposure = 0f,
 
-                        temperature = 0f,
-                        tint = 0f,
+                temperature = 0f,
+                tint = 0f,
 
-                        hueShift = 0f,
-                        saturation = 1f,
-                        contrast = 1f,
-                    };
-                }
-            }
+                hueShift = 0f,
+                saturation = 1f,
+                contrast = 1f,
+            };
         }
 
         [Serializable]
@@ -114,19 +102,13 @@ namespace UnityEngine.PostProcessing
             [HideInInspector]
             public int currentEditingChannel; // Used only in the editor
 
-            public static ChannelMixerSettings defaultSettings
+            public static ChannelMixerSettings defaultSettings => new ChannelMixerSettings
             {
-                get
-                {
-                    return new ChannelMixerSettings
-                    {
-                        red = new Vector3(1f, 0f, 0f),
-                        green = new Vector3(0f, 1f, 0f),
-                        blue = new Vector3(0f, 0f, 1f),
-                        currentEditingChannel = 0
-                    };
-                }
-            }
+                red = new Vector3(1f, 0f, 0f),
+                green = new Vector3(0f, 1f, 0f),
+                blue = new Vector3(0f, 0f, 1f),
+                currentEditingChannel = 0
+            };
         }
 
         [Serializable]
@@ -141,18 +123,12 @@ namespace UnityEngine.PostProcessing
             [Trackball("GetOffsetValue")]
             public Color offset;
 
-            public static LogWheelsSettings defaultSettings
+            public static LogWheelsSettings defaultSettings => new LogWheelsSettings
             {
-                get
-                {
-                    return new LogWheelsSettings
-                    {
-                        slope = Color.clear,
-                        power = Color.clear,
-                        offset = Color.clear
-                    };
-                }
-            }
+                slope = Color.clear,
+                power = Color.clear,
+                offset = Color.clear
+            };
         }
 
         [Serializable]
@@ -167,18 +143,12 @@ namespace UnityEngine.PostProcessing
             [Trackball("GetGainValue")]
             public Color gain;
 
-            public static LinearWheelsSettings defaultSettings
+            public static LinearWheelsSettings defaultSettings => new LinearWheelsSettings
             {
-                get
-                {
-                    return new LinearWheelsSettings
-                    {
-                        lift = Color.clear,
-                        gamma = Color.clear,
-                        gain = Color.clear
-                    };
-                }
-            }
+                lift = Color.clear,
+                gamma = Color.clear,
+                gain = Color.clear
+            };
         }
 
 	    public enum ColorWheelMode
@@ -198,18 +168,12 @@ namespace UnityEngine.PostProcessing
             [TrackballGroup]
             public LinearWheelsSettings linear;
 
-            public static ColorWheelsSettings defaultSettings
+            public static ColorWheelsSettings defaultSettings => new ColorWheelsSettings
             {
-                get
-                {
-                    return new ColorWheelsSettings
-                    {
-						mode = ColorWheelMode.Log,
-                        log = LogWheelsSettings.defaultSettings,
-                        linear = LinearWheelsSettings.defaultSettings
-                    };
-                }
-            }
+                mode = ColorWheelMode.Log,
+                log = LogWheelsSettings.defaultSettings,
+                linear = LinearWheelsSettings.defaultSettings
+            };
         }
 
         [Serializable]
@@ -231,30 +195,24 @@ namespace UnityEngine.PostProcessing
             [HideInInspector] public bool e_CurveG;
             [HideInInspector] public bool e_CurveB;
 
-            public static CurvesSettings defaultSettings
+            public static CurvesSettings defaultSettings => new CurvesSettings
             {
-                get
-                {
-                    return new CurvesSettings
-                    {
-                        master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        red    = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        green  = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        blue   = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
+                master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
+                red = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
+                green = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
+                blue = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
 
-                        hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true,  new Vector2(0f, 1f)),
-                        hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true,  new Vector2(0f, 1f)),
-                        satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
-                        lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
+                hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0f, 1f)),
+                hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0f, 1f)),
+                satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
+                lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
 
-                        e_CurrentEditingCurve = 0,
-                        e_CurveY = true,
-                        e_CurveR = false,
-                        e_CurveG = false,
-                        e_CurveB = false
-                    };
-                }
-            }
+                e_CurrentEditingCurve = 0,
+                e_CurveY = true,
+                e_CurveR = false,
+                e_CurveG = false,
+                e_CurveB = false
+            };
         }
 
         [Serializable]
@@ -266,27 +224,21 @@ namespace UnityEngine.PostProcessing
             public ColorWheelsSettings colorWheels;
             public CurvesSettings curves;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        tonemapping = TonemappingSettings.defaultSettings,
-                        basic = BasicSettings.defaultSettings,
-                        channelMixer = ChannelMixerSettings.defaultSettings,
-                        colorWheels = ColorWheelsSettings.defaultSettings,
-                        curves = CurvesSettings.defaultSettings
-                    };
-                }
-            }
+                tonemapping = TonemappingSettings.defaultSettings,
+                basic = BasicSettings.defaultSettings,
+                channelMixer = ChannelMixerSettings.defaultSettings,
+                colorWheels = ColorWheelsSettings.defaultSettings,
+                curves = CurvesSettings.defaultSettings
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
+            get => m_Settings;
             set
             {
                 m_Settings = value;

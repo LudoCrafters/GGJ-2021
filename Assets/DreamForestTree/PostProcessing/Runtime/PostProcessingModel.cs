@@ -6,16 +6,18 @@ namespace UnityEngine.PostProcessing
     public abstract class PostProcessingModel
     {
         [SerializeField, GetSet("enabled")]
-        bool m_Enabled;
+        private bool m_Enabled;
         public bool enabled
         {
-            get { return m_Enabled; }
+            get => m_Enabled;
             set
             {
                 m_Enabled = value;
 
                 if (value)
+                {
                     OnValidate();
+                }
             }
         }
 

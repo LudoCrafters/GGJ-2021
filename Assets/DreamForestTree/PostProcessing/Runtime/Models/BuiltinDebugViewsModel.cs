@@ -11,16 +11,10 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 1f), Tooltip("Scales the camera far plane before displaying the depth map.")]
             public float scale;
 
-            public static DepthSettings defaultSettings
+            public static DepthSettings defaultSettings => new DepthSettings
             {
-                get
-                {
-                    return new DepthSettings
-                    {
-                        scale = 1f
-                    };
-                }
-            }
+                scale = 1f
+            };
         }
 
         [Serializable]
@@ -44,23 +38,17 @@ namespace UnityEngine.PostProcessing
             [Min(0f), Tooltip("Tweaks the arrows length.")]
             public float motionVectorsAmplitude;
 
-            public static MotionVectorsSettings defaultSettings
+            public static MotionVectorsSettings defaultSettings => new MotionVectorsSettings
             {
-                get
-                {
-                    return new MotionVectorsSettings
-                    {
-                        sourceOpacity = 1f,
+                sourceOpacity = 1f,
 
-                        motionImageOpacity = 0f,
-                        motionImageAmplitude = 16f,
+                motionImageOpacity = 0f,
+                motionImageAmplitude = 16f,
 
-                        motionVectorsOpacity = 1f,
-                        motionVectorsResolution = 24,
-                        motionVectorsAmplitude = 64f
-                    };
-                }
-            }
+                motionVectorsOpacity = 1f,
+                motionVectorsResolution = 24,
+                motionVectorsAmplitude = 64f
+            };
         }
 
         public enum Mode
@@ -86,39 +74,27 @@ namespace UnityEngine.PostProcessing
             public DepthSettings depth;
             public MotionVectorsSettings motionVectors;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        mode = Mode.None,
-                        depth = DepthSettings.defaultSettings,
-                        motionVectors = MotionVectorsSettings.defaultSettings
-                    };
-                }
-            }
+                mode = Mode.None,
+                depth = DepthSettings.defaultSettings,
+                motionVectors = MotionVectorsSettings.defaultSettings
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
-        public bool willInterrupt
-        {
-            get
-            {
-                return !IsModeActive(Mode.None)
+        public bool willInterrupt => !IsModeActive(Mode.None)
                        && !IsModeActive(Mode.EyeAdaptation)
                        && !IsModeActive(Mode.PreGradingLog)
                        && !IsModeActive(Mode.LogLut)
                        && !IsModeActive(Mode.UserLut);
-            }
-        }
 
         public override void Reset()
         {

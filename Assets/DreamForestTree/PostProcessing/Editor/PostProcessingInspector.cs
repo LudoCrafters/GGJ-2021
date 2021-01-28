@@ -1,9 +1,9 @@
-using UnityEngine;
-using UnityEngine.PostProcessing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.PostProcessing;
 
 namespace UnityEditor.PostProcessing
 {
@@ -11,44 +11,43 @@ namespace UnityEditor.PostProcessing
     [CustomEditor(typeof(PostProcessingProfile))]
     public class PostProcessingInspector : Editor
     {
-        static GUIContent s_PreviewTitle = new GUIContent("Monitors");
+        private static readonly GUIContent s_PreviewTitle = new GUIContent("Monitors");
 
-        PostProcessingProfile m_ConcreteTarget
+        private PostProcessingProfile m_ConcreteTarget => target as PostProcessingProfile;
+
+        private int m_CurrentMonitorID
         {
-            get { return target as PostProcessingProfile; }
+            get => m_ConcreteTarget.monitors.currentMonitorID;
+            set => m_ConcreteTarget.monitors.currentMonitorID = value;
         }
 
-        int m_CurrentMonitorID
-        {
-            get { return m_ConcreteTarget.monitors.currentMonitorID; }
-            set { m_ConcreteTarget.monitors.currentMonitorID = value; }
-        }
-
-        List<PostProcessingMonitor> m_Monitors;
-        GUIContent[] m_MonitorNames;
-        Dictionary<PostProcessingModelEditor, PostProcessingModel> m_CustomEditors = new Dictionary<PostProcessingModelEditor, PostProcessingModel>();
+        private List<PostProcessingMonitor> m_Monitors;
+        private GUIContent[] m_MonitorNames;
+        private readonly Dictionary<PostProcessingModelEditor, PostProcessingModel> m_CustomEditors = new Dictionary<PostProcessingModelEditor, PostProcessingModel>();
 
         public bool IsInteractivePreviewOpened { get; private set; }
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (target == null)
+            {
                 return;
+            }
 
             // Aggregate custom post-fx editors
-            var assembly = Assembly.GetAssembly(typeof(PostProcessingInspector));
+            Assembly assembly = Assembly.GetAssembly(typeof(PostProcessingInspector));
 
-            var editorTypes = assembly.GetTypes()
+            IEnumerable<Type> editorTypes = assembly.GetTypes()
                 .Where(x => x.IsDefined(typeof(PostProcessingModelEditorAttribute), false));
 
-            var customEditors = new Dictionary<Type, PostProcessingModelEditor>();
-            foreach (var editor in editorTypes)
+            Dictionary<Type, PostProcessingModelEditor> customEditors = new Dictionary<Type, PostProcessingModelEditor>();
+            foreach (Type editor in editorTypes)
             {
-                var attr = (PostProcessingModelEditorAttribute)editor.GetCustomAttributes(typeof(PostProcessingModelEditorAttribute), false)[0];
-                var effectType = attr.type;
-                var alwaysEnabled = attr.alwaysEnabled;
+                PostProcessingModelEditorAttribute attr = (PostProcessingModelEditorAttribute)editor.GetCustomAttributes(typeof(PostProcessingModelEditorAttribute), false)[0];
+                Type effectType = attr.type;
+                bool alwaysEnabled = attr.alwaysEnabled;
 
-                var editorInst = (PostProcessingModelEditor)Activator.CreateInstance(editor);
+                PostProcessingModelEditor editorInst = (PostProcessingModelEditor)Activator.CreateInstance(editor);
                 editorInst.alwaysEnabled = alwaysEnabled;
                 editorInst.profile = target as PostProcessingProfile;
                 editorInst.inspector = this;
@@ -56,27 +55,32 @@ namespace UnityEditor.PostProcessing
             }
 
             // ... and corresponding models
-            var baseType = target.GetType();
-            var property = serializedObject.GetIterator();
+            Type baseType = target.GetType();
+            SerializedProperty property = serializedObject.GetIterator();
 
             while (property.Next(true))
             {
                 if (!property.hasChildren)
+                {
                     continue;
+                }
 
-                var type = baseType;
-                var srcObject = ReflectionUtils.GetFieldValueFromPath(serializedObject.targetObject, ref type, property.propertyPath);
+                Type type = baseType;
+                object srcObject = ReflectionUtils.GetFieldValueFromPath(serializedObject.targetObject, ref type, property.propertyPath);
 
                 if (srcObject == null)
-                    continue;
-
-                PostProcessingModelEditor editor;
-                if (customEditors.TryGetValue(type, out editor))
                 {
-                    var effect = (PostProcessingModel)srcObject;
+                    continue;
+                }
+
+                if (customEditors.TryGetValue(type, out PostProcessingModelEditor editor))
+                {
+                    PostProcessingModel effect = (PostProcessingModel)srcObject;
 
                     if (editor.alwaysEnabled)
+                    {
                         effect.enabled = editor.alwaysEnabled;
+                    }
 
                     m_CustomEditors.Add(editor, effect);
                     editor.target = effect;
@@ -88,7 +92,7 @@ namespace UnityEditor.PostProcessing
             // Prepare monitors
             m_Monitors = new List<PostProcessingMonitor>();
 
-            var monitors = new List<PostProcessingMonitor>
+            List<PostProcessingMonitor> monitors = new List<PostProcessingMonitor>
             {
                 new HistogramMonitor(),
                 new WaveformMonitor(),
@@ -96,9 +100,9 @@ namespace UnityEditor.PostProcessing
                 new VectorscopeMonitor()
             };
 
-            var monitorNames = new List<GUIContent>();
+            List<GUIContent> monitorNames = new List<GUIContent>();
 
-            foreach (var monitor in monitors)
+            foreach (PostProcessingMonitor monitor in monitors)
             {
                 if (monitor.IsSupported())
                 {
@@ -111,38 +115,50 @@ namespace UnityEditor.PostProcessing
             m_MonitorNames = monitorNames.ToArray();
 
             if (m_Monitors.Count > 0)
+            {
                 m_ConcreteTarget.monitors.onFrameEndEditorOnly = OnFrameEnd;
+            }
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             if (m_CustomEditors != null)
             {
-                foreach (var editor in m_CustomEditors.Keys)
+                foreach (PostProcessingModelEditor editor in m_CustomEditors.Keys)
+                {
                     editor.OnDisable();
+                }
 
                 m_CustomEditors.Clear();
             }
 
             if (m_Monitors != null)
             {
-                foreach (var monitor in m_Monitors)
+                foreach (PostProcessingMonitor monitor in m_Monitors)
+                {
                     monitor.Dispose();
+                }
 
                 m_Monitors.Clear();
             }
 
             if (m_ConcreteTarget != null)
+            {
                 m_ConcreteTarget.monitors.onFrameEndEditorOnly = null;
+            }
         }
 
-        void OnFrameEnd(RenderTexture source)
+        private void OnFrameEnd(RenderTexture source)
         {
             if (!IsInteractivePreviewOpened)
+            {
                 return;
+            }
 
             if (m_CurrentMonitorID < m_Monitors.Count)
+            {
                 m_Monitors[m_CurrentMonitorID].OnFrameData(source);
+            }
 
             IsInteractivePreviewOpened = false;
         }
@@ -152,24 +168,30 @@ namespace UnityEditor.PostProcessing
             serializedObject.Update();
 
             // Handles undo/redo events first (before they get used by the editors' widgets)
-            var e = Event.current;
+            Event e = Event.current;
             if (e.type == EventType.ValidateCommand && e.commandName == "UndoRedoPerformed")
             {
-                foreach (var editor in m_CustomEditors)
+                foreach (KeyValuePair<PostProcessingModelEditor, PostProcessingModel> editor in m_CustomEditors)
+                {
                     editor.Value.OnValidate();
+                }
             }
 
             if (!m_ConcreteTarget.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.None))
+            {
                 EditorGUILayout.HelpBox("A debug view is currently enabled. Changes done to an effect might not be visible.", MessageType.Info);
+            }
 
-            foreach (var editor in m_CustomEditors)
+            foreach (KeyValuePair<PostProcessingModelEditor, PostProcessingModel> editor in m_CustomEditors)
             {
                 EditorGUI.BeginChangeCheck();
 
                 editor.Key.OnGUI();
 
                 if (EditorGUI.EndChangeCheck())
+                {
                     editor.Value.OnValidate();
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -190,7 +212,9 @@ namespace UnityEditor.PostProcessing
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (m_CurrentMonitorID < m_Monitors.Count)
+                {
                     m_Monitors[m_CurrentMonitorID].OnMonitorSettings();
+                }
 
                 GUILayout.Space(5);
                 m_CurrentMonitorID = EditorGUILayout.Popup(m_CurrentMonitorID, m_MonitorNames, FxStyles.preDropdown, GUILayout.MaxWidth(100f));
@@ -202,7 +226,9 @@ namespace UnityEditor.PostProcessing
             IsInteractivePreviewOpened = true;
 
             if (m_CurrentMonitorID < m_Monitors.Count)
+            {
                 m_Monitors[m_CurrentMonitorID].OnMonitorGUI(r);
+            }
         }
     }
 }

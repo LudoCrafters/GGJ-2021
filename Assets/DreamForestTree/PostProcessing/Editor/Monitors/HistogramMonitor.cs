@@ -8,13 +8,12 @@ namespace UnityEditor.PostProcessing
 
     public class HistogramMonitor : PostProcessingMonitor
     {
-        static GUIContent s_MonitorTitle = new GUIContent("Histogram");
-
-        ComputeShader m_ComputeShader;
-        ComputeBuffer m_Buffer;
-        Material m_Material;
-        RenderTexture m_HistogramTexture;
-        Rect m_MonitorAreaRect;
+        private static readonly GUIContent s_MonitorTitle = new GUIContent("Histogram");
+        private readonly ComputeShader m_ComputeShader;
+        private ComputeBuffer m_Buffer;
+        private Material m_Material;
+        private RenderTexture m_HistogramTexture;
+        private Rect m_MonitorAreaRect;
 
         public HistogramMonitor()
         {
@@ -27,7 +26,9 @@ namespace UnityEditor.PostProcessing
             GraphicsUtils.Destroy(m_HistogramTexture);
 
             if (m_Buffer != null)
+            {
                 m_Buffer.Release();
+            }
 
             m_Material = null;
             m_HistogramTexture = null;
@@ -49,7 +50,7 @@ namespace UnityEditor.PostProcessing
             EditorGUI.BeginChangeCheck();
 
             bool refreshOnPlay = m_MonitorSettings.refreshOnPlay;
-            var mode = m_MonitorSettings.histogramMode;
+            HistogramMode mode = m_MonitorSettings.histogramMode;
 
             refreshOnPlay = GUILayout.Toggle(refreshOnPlay, new GUIContent(FxStyles.playIcon, "Keep refreshing the histogram in play mode; this may impact performances."), FxStyles.preButton);
             mode = (HistogramMode)EditorGUILayout.EnumPopup(mode, FxStyles.preDropdown, GUILayout.MaxWidth(100f));
@@ -69,7 +70,9 @@ namespace UnityEditor.PostProcessing
             {
                 // If m_MonitorAreaRect isn't set the preview was just opened so refresh the render to get the histogram data
                 if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0))
+                {
                     InternalEditorUtility.RepaintAllViews();
+                }
 
                 // Sizing
                 float width = m_HistogramTexture != null
@@ -89,7 +92,7 @@ namespace UnityEditor.PostProcessing
                 {
                     Graphics.DrawTexture(m_MonitorAreaRect, m_HistogramTexture);
 
-                    var color = Color.white;
+                    Color color = Color.white;
                     const float kTickSize = 5f;
 
                     // Rect, lines & ticks points
@@ -100,23 +103,23 @@ namespace UnityEditor.PostProcessing
                         //  M       G
                         //  L K J I H
 
-                        var A = new Vector3(m_MonitorAreaRect.x - 1f, m_MonitorAreaRect.y - 1f);
-                        var E = new Vector3(A.x + m_MonitorAreaRect.width + 2f, m_MonitorAreaRect.y - 1f);
-                        var H = new Vector3(E.x, E.y + m_MonitorAreaRect.height + 2f);
-                        var L = new Vector3(A.x, H.y);
+                        Vector3 A = new Vector3(m_MonitorAreaRect.x - 1f, m_MonitorAreaRect.y - 1f);
+                        Vector3 E = new Vector3(A.x + m_MonitorAreaRect.width + 2f, m_MonitorAreaRect.y - 1f);
+                        Vector3 H = new Vector3(E.x, E.y + m_MonitorAreaRect.height + 2f);
+                        Vector3 L = new Vector3(A.x, H.y);
 
-                        var N = new Vector3(A.x, A.y + (L.y - A.y) / 3f);
-                        var M = new Vector3(A.x, A.y + (L.y - A.y) * 2f / 3f);
-                        var F = new Vector3(E.x, E.y + (H.y - E.y) / 3f);
-                        var G = new Vector3(E.x, E.y + (H.y - E.y) * 2f / 3f);
+                        Vector3 N = new Vector3(A.x, A.y + (L.y - A.y) / 3f);
+                        Vector3 M = new Vector3(A.x, A.y + (L.y - A.y) * 2f / 3f);
+                        Vector3 F = new Vector3(E.x, E.y + (H.y - E.y) / 3f);
+                        Vector3 G = new Vector3(E.x, E.y + (H.y - E.y) * 2f / 3f);
 
-                        var C = new Vector3(A.x + (E.x - A.x) / 2f, A.y);
-                        var J = new Vector3(L.x + (H.x - L.x) / 2f, L.y);
+                        Vector3 C = new Vector3(A.x + (E.x - A.x) / 2f, A.y);
+                        Vector3 J = new Vector3(L.x + (H.x - L.x) / 2f, L.y);
 
-                        var B = new Vector3(A.x + (C.x - A.x) / 2f, A.y);
-                        var D = new Vector3(C.x + (E.x - C.x) / 2f, C.y);
-                        var I = new Vector3(J.x + (H.x - J.x) / 2f, J.y);
-                        var K = new Vector3(L.x + (J.x - L.x) / 2f, L.y);
+                        Vector3 B = new Vector3(A.x + (C.x - A.x) / 2f, A.y);
+                        Vector3 D = new Vector3(C.x + (E.x - C.x) / 2f, C.y);
+                        Vector3 I = new Vector3(J.x + (H.x - J.x) / 2f, J.y);
+                        Vector3 K = new Vector3(L.x + (J.x - L.x) / 2f, L.y);
 
                         // Borders
                         Handles.color = color;
@@ -167,25 +170,25 @@ namespace UnityEditor.PostProcessing
                         //  N       H
                         //  M L K J I
 
-                        var A = new Vector3(m_MonitorAreaRect.x, m_MonitorAreaRect.y);
-                        var E = new Vector3(A.x + m_MonitorAreaRect.width + 1f, m_MonitorAreaRect.y);
-                        var I = new Vector3(E.x, E.y + m_MonitorAreaRect.height + 1f);
-                        var M = new Vector3(A.x, I.y);
+                        Vector3 A = new Vector3(m_MonitorAreaRect.x, m_MonitorAreaRect.y);
+                        Vector3 E = new Vector3(A.x + m_MonitorAreaRect.width + 1f, m_MonitorAreaRect.y);
+                        Vector3 I = new Vector3(E.x, E.y + m_MonitorAreaRect.height + 1f);
+                        Vector3 M = new Vector3(A.x, I.y);
 
-                        var C = new Vector3(A.x + (E.x - A.x) / 2f, A.y);
-                        var G = new Vector3(E.x, E.y + (I.y - E.y) / 2f);
-                        var K = new Vector3(M.x + (I.x - M.x) / 2f, M.y);
-                        var O = new Vector3(A.x, A.y + (M.y - A.y) / 2f);
+                        Vector3 C = new Vector3(A.x + (E.x - A.x) / 2f, A.y);
+                        Vector3 G = new Vector3(E.x, E.y + (I.y - E.y) / 2f);
+                        Vector3 K = new Vector3(M.x + (I.x - M.x) / 2f, M.y);
+                        Vector3 O = new Vector3(A.x, A.y + (M.y - A.y) / 2f);
 
-                        var P = new Vector3(A.x, A.y + (O.y - A.y) / 2f);
-                        var F = new Vector3(E.x, E.y + (G.y - E.y) / 2f);
-                        var N = new Vector3(A.x, O.y + (M.y - O.y) / 2f);
-                        var H = new Vector3(E.x, G.y + (I.y - G.y) / 2f);
+                        Vector3 P = new Vector3(A.x, A.y + (O.y - A.y) / 2f);
+                        Vector3 F = new Vector3(E.x, E.y + (G.y - E.y) / 2f);
+                        Vector3 N = new Vector3(A.x, O.y + (M.y - O.y) / 2f);
+                        Vector3 H = new Vector3(E.x, G.y + (I.y - G.y) / 2f);
 
-                        var B = new Vector3(A.x + (C.x - A.x) / 2f, A.y);
-                        var L = new Vector3(M.x + (K.x - M.x) / 2f, M.y);
-                        var D = new Vector3(C.x + (E.x - C.x) / 2f, A.y);
-                        var J = new Vector3(K.x + (I.x - K.x) / 2f, M.y);
+                        Vector3 B = new Vector3(A.x + (C.x - A.x) / 2f, A.y);
+                        Vector3 L = new Vector3(M.x + (K.x - M.x) / 2f, M.y);
+                        Vector3 D = new Vector3(C.x + (E.x - C.x) / 2f, A.y);
+                        Vector3 J = new Vector3(K.x + (I.x - K.x) / 2f, M.y);
 
                         // Borders
                         Handles.color = color;
@@ -241,28 +244,32 @@ namespace UnityEditor.PostProcessing
         public override void OnFrameData(RenderTexture source)
         {
             if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay)
+            {
                 return;
+            }
 
             if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0))
+            {
                 return;
+            }
 
-            float ratio = (float)source.width / (float)source.height;
+            float ratio = source.width / (float)source.height;
             int h = 512;
             int w = Mathf.FloorToInt(h * ratio);
 
-            var rt = RenderTexture.GetTemporary(w, h, 0, source.format);
+            RenderTexture rt = RenderTexture.GetTemporary(w, h, 0, source.format);
             Graphics.Blit(source, rt);
             ComputeHistogram(rt);
             m_BaseEditor.Repaint();
             RenderTexture.ReleaseTemporary(rt);
         }
 
-        void CreateBuffer(int width, int height)
+        private void CreateBuffer(int width, int height)
         {
             m_Buffer = new ComputeBuffer(width * height, sizeof(uint) << 2);
         }
 
-        void ComputeHistogram(RenderTexture source)
+        private void ComputeHistogram(RenderTexture source)
         {
             if (m_Buffer == null)
             {
@@ -279,7 +286,7 @@ namespace UnityEditor.PostProcessing
                 m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Histogram Render")) { hideFlags = HideFlags.DontSave };
             }
 
-            var channels = Vector4.zero;
+            Vector4 channels = Vector4.zero;
             switch (m_MonitorSettings.histogramMode)
             {
                 case HistogramMode.Red: channels.x = 1f; break;
@@ -289,7 +296,7 @@ namespace UnityEditor.PostProcessing
                 default: channels = new Vector4(1f, 1f, 1f, 0f); break;
             }
 
-            var cs = m_ComputeShader;
+            ComputeShader cs = m_ComputeShader;
 
             int kernel = cs.FindKernel("KHistogramClear");
             cs.SetBuffer(kernel, "_Histogram", m_Buffer);
@@ -328,9 +335,13 @@ namespace UnityEditor.PostProcessing
 
             int pass = 0;
             if (m_MonitorSettings.histogramMode == HistogramMode.RGBMerged)
+            {
                 pass = 1;
+            }
             else if (m_MonitorSettings.histogramMode == HistogramMode.RGBSplit)
+            {
                 pass = 2;
+            }
 
             Graphics.Blit(null, m_HistogramTexture, m_Material, pass);
         }

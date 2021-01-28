@@ -5,7 +5,7 @@ namespace UnityEngine.PostProcessing
 {
     public sealed class RenderTextureFactory : IDisposable
     {
-        HashSet<RenderTexture> m_TemporaryRTs;
+        private readonly HashSet<RenderTexture> m_TemporaryRTs;
 
         public RenderTextureFactory()
         {
@@ -27,7 +27,7 @@ namespace UnityEngine.PostProcessing
 
         public RenderTexture Get(int width, int height, int depthBuffer = 0, RenderTextureFormat format = RenderTextureFormat.ARGBHalf, RenderTextureReadWrite rw = RenderTextureReadWrite.Default, FilterMode filterMode = FilterMode.Bilinear, TextureWrapMode wrapMode = TextureWrapMode.Clamp, string name = "FactoryTempTexture")
         {
-            var rt = RenderTexture.GetTemporary(width, height, depthBuffer, format, rw); // add forgotten param rw
+            RenderTexture rt = RenderTexture.GetTemporary(width, height, depthBuffer, format, rw); // add forgotten param rw
             rt.filterMode = filterMode;
             rt.wrapMode = wrapMode;
             rt.name = name;
@@ -38,10 +38,14 @@ namespace UnityEngine.PostProcessing
         public void Release(RenderTexture rt)
         {
             if (rt == null)
+            {
                 return;
+            }
 
             if (!m_TemporaryRTs.Contains(rt))
+            {
                 throw new ArgumentException(string.Format("Attempting to remove a RenderTexture that was not allocated: {0}", rt));
+            }
 
             m_TemporaryRTs.Remove(rt);
             RenderTexture.ReleaseTemporary(rt);
@@ -49,9 +53,11 @@ namespace UnityEngine.PostProcessing
 
         public void ReleaseAll()
         {
-            var enumerator = m_TemporaryRTs.GetEnumerator();
+            HashSet<RenderTexture>.Enumerator enumerator = m_TemporaryRTs.GetEnumerator();
             while (enumerator.MoveNext())
+            {
                 RenderTexture.ReleaseTemporary(enumerator.Current);
+            }
 
             m_TemporaryRTs.Clear();
         }

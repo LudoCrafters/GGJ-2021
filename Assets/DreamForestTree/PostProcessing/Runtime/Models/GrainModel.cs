@@ -20,27 +20,21 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 1f), Tooltip("Controls the noisiness response curve based on scene luminance. Lower values mean less noise in dark areas.")]
             public float luminanceContribution;
 
-            public static Settings defaultSettings
+            public static Settings defaultSettings => new Settings
             {
-                get
-                {
-                    return new Settings
-                    {
-                        colored = true,
-                        intensity = 0.5f,
-                        size = 1f,
-                        luminanceContribution = 0.8f
-                    };
-                }
-            }
+                colored = true,
+                intensity = 0.5f,
+                size = 1f,
+                luminanceContribution = 0.8f
+            };
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        private Settings m_Settings = Settings.defaultSettings;
         public Settings settings
         {
-            get { return m_Settings; }
-            set { m_Settings = value; }
+            get => m_Settings;
+            set => m_Settings = value;
         }
 
         public override void Reset()

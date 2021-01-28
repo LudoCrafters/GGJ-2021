@@ -7,13 +7,13 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(AmbientOcclusionModel))]
     public class AmbientOcclusionModelEditor : PostProcessingModelEditor
     {
-        SerializedProperty m_Intensity;
-        SerializedProperty m_Radius;
-        SerializedProperty m_SampleCount;
-        SerializedProperty m_Downsampling;
-        SerializedProperty m_ForceForwardCompatibility;
-        SerializedProperty m_AmbientOnly;
-        SerializedProperty m_HighPrecision;
+        private SerializedProperty m_Intensity;
+        private SerializedProperty m_Radius;
+        private SerializedProperty m_SampleCount;
+        private SerializedProperty m_Downsampling;
+        private SerializedProperty m_ForceForwardCompatibility;
+        private SerializedProperty m_AmbientOnly;
+        private SerializedProperty m_HighPrecision;
 
         public override void OnEnable()
         {
@@ -36,7 +36,9 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_HighPrecision, EditorGUIHelper.GetContent("High Precision (Forward)"));
 
             using (new EditorGUI.DisabledGroupScope(m_ForceForwardCompatibility.boolValue))
+            {
                 EditorGUILayout.PropertyField(m_AmbientOnly, EditorGUIHelper.GetContent("Ambient Only (Deferred + HDR)"));
+            }
         }
     }
 }

@@ -19,37 +19,35 @@ namespace UnityEngine.PostProcessing
         public Func<Vector2, Matrix4x4> jitteredMatrixFunc;
 
         // Internal helpers
-        Dictionary<Type, KeyValuePair<CameraEvent, CommandBuffer>> m_CommandBuffers;
-        List<PostProcessingComponentBase> m_Components;
-        Dictionary<PostProcessingComponentBase, bool> m_ComponentStates;
-
-        MaterialFactory m_MaterialFactory;
-        RenderTextureFactory m_RenderTextureFactory;
-        PostProcessingContext m_Context;
-        Camera m_Camera;
-        PostProcessingProfile m_PreviousProfile;
-
-        bool m_RenderingInSceneView = false;
+        private Dictionary<Type, KeyValuePair<CameraEvent, CommandBuffer>> m_CommandBuffers;
+        private List<PostProcessingComponentBase> m_Components;
+        private Dictionary<PostProcessingComponentBase, bool> m_ComponentStates;
+        private MaterialFactory m_MaterialFactory;
+        private RenderTextureFactory m_RenderTextureFactory;
+        private PostProcessingContext m_Context;
+        private Camera m_Camera;
+        private PostProcessingProfile m_PreviousProfile;
+        private bool m_RenderingInSceneView = false;
 
         // Effect components
-        BuiltinDebugViewsComponent m_DebugViews;
-        AmbientOcclusionComponent m_AmbientOcclusion;
-        ScreenSpaceReflectionComponent m_ScreenSpaceReflection;
-        FogComponent m_FogComponent;
-        MotionBlurComponent m_MotionBlur;
-        TaaComponent m_Taa;
-        EyeAdaptationComponent m_EyeAdaptation;
-        DepthOfFieldComponent m_DepthOfField;
-        BloomComponent m_Bloom;
-        ChromaticAberrationComponent m_ChromaticAberration;
-        ColorGradingComponent m_ColorGrading;
-        UserLutComponent m_UserLut;
-        GrainComponent m_Grain;
-        VignetteComponent m_Vignette;
-        DitheringComponent m_Dithering;
-        FxaaComponent m_Fxaa;
+        private BuiltinDebugViewsComponent m_DebugViews;
+        private AmbientOcclusionComponent m_AmbientOcclusion;
+        private ScreenSpaceReflectionComponent m_ScreenSpaceReflection;
+        private FogComponent m_FogComponent;
+        private MotionBlurComponent m_MotionBlur;
+        private TaaComponent m_Taa;
+        private EyeAdaptationComponent m_EyeAdaptation;
+        private DepthOfFieldComponent m_DepthOfField;
+        private BloomComponent m_Bloom;
+        private ChromaticAberrationComponent m_ChromaticAberration;
+        private ColorGradingComponent m_ColorGrading;
+        private UserLutComponent m_UserLut;
+        private GrainComponent m_Grain;
+        private VignetteComponent m_Vignette;
+        private DitheringComponent m_Dithering;
+        private FxaaComponent m_Fxaa;
 
-        void OnEnable()
+        private void OnEnable()
         {
             m_CommandBuffers = new Dictionary<Type, KeyValuePair<CameraEvent, CommandBuffer>>();
             m_MaterialFactory = new MaterialFactory();
@@ -80,13 +78,15 @@ namespace UnityEngine.PostProcessing
             // Prepare state observers
             m_ComponentStates = new Dictionary<PostProcessingComponentBase, bool>();
 
-            foreach (var component in m_Components)
+            foreach (PostProcessingComponentBase component in m_Components)
+            {
                 m_ComponentStates.Add(component, false);
+            }
 
             useGUILayout = false;
         }
 
-        void OnPreCull()
+        private void OnPreCull()
         {
             // All the per-frame initialization logic has to be done in OnPreCull instead of Update
             // because [ImageEffectAllowedInSceneView] doesn't trigger Update events...
@@ -94,7 +94,9 @@ namespace UnityEngine.PostProcessing
             m_Camera = GetComponent<Camera>();
 
             if (profile == null || m_Camera == null)
+            {
                 return;
+            }
 
 #if UNITY_EDITOR
             // Track the scene view camera to disable some effects we don't want to see in the
@@ -108,7 +110,7 @@ namespace UnityEngine.PostProcessing
 #endif
 
             // Prepare context
-            var context = m_Context.Reset();
+            PostProcessingContext context = m_Context.Reset();
             context.profile = profile;
             context.renderTextureFactory = m_RenderTextureFactory;
             context.materialFactory = m_MaterialFactory;
@@ -143,24 +145,30 @@ namespace UnityEngine.PostProcessing
 
             // Find out which camera flags are needed before rendering begins
             // Note that motion vectors will only be available one frame after being enabled
-            var flags = context.camera.depthTextureMode;
-            foreach (var component in m_Components)
+            DepthTextureMode flags = context.camera.depthTextureMode;
+            foreach (PostProcessingComponentBase component in m_Components)
             {
                 if (component.active)
+                {
                     flags |= component.GetCameraFlags();
+                }
             }
 
             context.camera.depthTextureMode = flags;
 
             // Temporal antialiasing jittering, needs to happen before culling
             if (!m_RenderingInSceneView && m_Taa.active && !profile.debugViews.willInterrupt)
+            {
                 m_Taa.SetProjectionMatrix(jitteredMatrixFunc);
+            }
         }
 
-        void OnPreRender()
+        private void OnPreRender()
         {
             if (profile == null)
+            {
                 return;
+            }
 
             // Command buffer-based effects should be set-up here
             TryExecuteCommandBuffer(m_DebugViews);
@@ -169,20 +177,26 @@ namespace UnityEngine.PostProcessing
             TryExecuteCommandBuffer(m_FogComponent);
 
             if (!m_RenderingInSceneView)
+            {
                 TryExecuteCommandBuffer(m_MotionBlur);
+            }
         }
 
-        void OnPostRender()
+        private void OnPostRender()
         {
             if (profile == null || m_Camera == null)
+            {
                 return;
+            }
 
             if (!m_RenderingInSceneView && m_Taa.active && !profile.debugViews.willInterrupt)
+            {
                 m_Context.camera.ResetProjectionMatrix();
+            }
         }
 
         // Classic render target pipeline for RT-based effects
-        void OnRenderImage(RenderTexture source, RenderTexture destination)
+        private void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
             if (profile == null || m_Camera == null)
             {
@@ -196,15 +210,15 @@ namespace UnityEngine.PostProcessing
             bool taaActive = m_Taa.active && !m_RenderingInSceneView;
             bool dofActive = m_DepthOfField.active && !m_RenderingInSceneView;
 
-            var uberMaterial = m_MaterialFactory.Get("Hidden/Post FX/Uber Shader");
+            Material uberMaterial = m_MaterialFactory.Get("Hidden/Post FX/Uber Shader");
             uberMaterial.shaderKeywords = null;
 
-            var src = source;
-            var dst = destination;
+            RenderTexture src = source;
+            RenderTexture dst = destination;
 
             if (taaActive)
             {
-                var tempRT = m_RenderTextureFactory.Get(src);
+                RenderTexture tempRT = m_RenderTextureFactory.Get(src);
                 m_Taa.Render(src, tempRT);
                 src = tempRT;
             }
@@ -215,7 +229,9 @@ namespace UnityEngine.PostProcessing
             // At runtime the output will always be the backbuffer or whatever render target is
             // currently set on the camera.
             if (profile.monitors.onFrameEndEditorOnly != null)
+            {
                 dst = m_RenderTextureFactory.Get(src);
+            }
 #endif
 
             Texture autoExposure = GraphicsUtils.whiteTexture;
@@ -244,7 +260,7 @@ namespace UnityEngine.PostProcessing
             uberActive |= TryPrepareUberImageEffect(m_Vignette, uberMaterial);
             uberActive |= TryPrepareUberImageEffect(m_UserLut, uberMaterial);
 
-            var fxaaMaterial = fxaaActive
+            Material fxaaMaterial = fxaaActive
                 ? m_MaterialFactory.Get("Hidden/Post FX/FXAA")
                 : null;
 
@@ -256,7 +272,7 @@ namespace UnityEngine.PostProcessing
 
                 if (uberActive)
                 {
-                    var output = m_RenderTextureFactory.Get(src);
+                    RenderTexture output = m_RenderTextureFactory.Get(src);
                     Graphics.Blit(src, output, uberMaterial, 0);
                     src = output;
                 }
@@ -271,21 +287,25 @@ namespace UnityEngine.PostProcessing
                 if (uberActive)
                 {
                     if (!GraphicsUtils.isLinearColorSpace)
+                    {
                         uberMaterial.EnableKeyword("UNITY_COLORSPACE_GAMMA");
+                    }
 
                     Graphics.Blit(src, dst, uberMaterial, 0);
                 }
             }
 
             if (!uberActive && !fxaaActive)
+            {
                 Graphics.Blit(src, dst);
+            }
 
 #if UNITY_EDITOR
             if (profile.monitors.onFrameEndEditorOnly != null)
             {
                 Graphics.Blit(dst, destination);
 
-                var oldRt = RenderTexture.active;
+                RenderTexture oldRt = RenderTexture.active;
                 profile.monitors.onFrameEndEditorOnly(dst);
                 RenderTexture.active = oldRt;
             }
@@ -294,26 +314,36 @@ namespace UnityEngine.PostProcessing
             m_RenderTextureFactory.ReleaseAll();
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             if (Event.current.type != EventType.Repaint)
+            {
                 return;
+            }
 
             if (profile == null || m_Camera == null)
+            {
                 return;
+            }
 
             if (m_EyeAdaptation.active && profile.debugViews.IsModeActive(DebugMode.EyeAdaptation))
+            {
                 m_EyeAdaptation.OnGUI();
+            }
             else if (m_ColorGrading.active && profile.debugViews.IsModeActive(DebugMode.LogLut))
+            {
                 m_ColorGrading.OnGUI();
+            }
             else if (m_UserLut.active && profile.debugViews.IsModeActive(DebugMode.UserLut))
+            {
                 m_UserLut.OnGUI();
+            }
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             // Clear command buffers
-            foreach (var cb in m_CommandBuffers.Values)
+            foreach (KeyValuePair<CameraEvent, CommandBuffer> cb in m_CommandBuffers.Values)
             {
                 m_Camera.RemoveCommandBuffer(cb.Key, cb.Value);
                 cb.Value.Dispose();
@@ -323,7 +353,9 @@ namespace UnityEngine.PostProcessing
 
             // Clear components
             if (profile != null)
+            {
                 DisableComponents();
+            }
 
             m_Components.Clear();
 
@@ -342,33 +374,39 @@ namespace UnityEngine.PostProcessing
 
         #region State management
 
-        List<PostProcessingComponentBase> m_ComponentsToEnable = new List<PostProcessingComponentBase>();
-        List<PostProcessingComponentBase> m_ComponentsToDisable = new List<PostProcessingComponentBase>();
+        private readonly List<PostProcessingComponentBase> m_ComponentsToEnable = new List<PostProcessingComponentBase>();
+        private readonly List<PostProcessingComponentBase> m_ComponentsToDisable = new List<PostProcessingComponentBase>();
 
-        void CheckObservers()
+        private void CheckObservers()
         {
-            foreach (var cs in m_ComponentStates)
+            foreach (KeyValuePair<PostProcessingComponentBase, bool> cs in m_ComponentStates)
             {
-                var component = cs.Key;
-                var state = component.GetModel().enabled;
+                PostProcessingComponentBase component = cs.Key;
+                bool state = component.GetModel().enabled;
 
                 if (state != cs.Value)
                 {
-                    if (state) m_ComponentsToEnable.Add(component);
-                    else m_ComponentsToDisable.Add(component);
+                    if (state)
+                    {
+                        m_ComponentsToEnable.Add(component);
+                    }
+                    else
+                    {
+                        m_ComponentsToDisable.Add(component);
+                    }
                 }
             }
 
             for (int i = 0; i < m_ComponentsToDisable.Count; i++)
             {
-                var c = m_ComponentsToDisable[i];
+                PostProcessingComponentBase c = m_ComponentsToDisable[i];
                 m_ComponentStates[c] = false;
                 c.OnDisable();
             }
 
             for (int i = 0; i < m_ComponentsToEnable.Count; i++)
             {
-                var c = m_ComponentsToEnable[i];
+                PostProcessingComponentBase c = m_ComponentsToEnable[i];
                 m_ComponentStates[c] = true;
                 c.OnEnable();
             }
@@ -377,13 +415,15 @@ namespace UnityEngine.PostProcessing
             m_ComponentsToEnable.Clear();
         }
 
-        void DisableComponents()
+        private void DisableComponents()
         {
-            foreach (var component in m_Components)
+            foreach (PostProcessingComponentBase component in m_Components)
             {
-                var model = component.GetModel();
+                PostProcessingModel model = component.GetModel();
                 if (model != null && model.enabled)
+                {
                     component.OnDisable();
+                }
             }
         }
 
@@ -392,37 +432,37 @@ namespace UnityEngine.PostProcessing
         #region Command buffer handling & rendering helpers
         // Placeholders before the upcoming Scriptable Render Loop as command buffers will be
         // executed on the go so we won't need of all that stuff
-        CommandBuffer AddCommandBuffer<T>(CameraEvent evt, string name)
+        private CommandBuffer AddCommandBuffer<T>(CameraEvent evt, string name)
             where T : PostProcessingModel
         {
-            var cb = new CommandBuffer { name = name };
-            var kvp = new KeyValuePair<CameraEvent, CommandBuffer>(evt, cb);
+            CommandBuffer cb = new CommandBuffer { name = name };
+            KeyValuePair<CameraEvent, CommandBuffer> kvp = new KeyValuePair<CameraEvent, CommandBuffer>(evt, cb);
             m_CommandBuffers.Add(typeof(T), kvp);
             m_Camera.AddCommandBuffer(evt, kvp.Value);
             return kvp.Value;
         }
 
-        void RemoveCommandBuffer<T>()
+        private void RemoveCommandBuffer<T>()
             where T : PostProcessingModel
         {
-            KeyValuePair<CameraEvent, CommandBuffer> kvp;
-            var type = typeof(T);
+            Type type = typeof(T);
 
-            if (!m_CommandBuffers.TryGetValue(type, out kvp))
+            if (!m_CommandBuffers.TryGetValue(type, out KeyValuePair<CameraEvent, CommandBuffer> kvp))
+            {
                 return;
+            }
 
             m_Camera.RemoveCommandBuffer(kvp.Key, kvp.Value);
             m_CommandBuffers.Remove(type);
             kvp.Value.Dispose();
         }
 
-        CommandBuffer GetCommandBuffer<T>(CameraEvent evt, string name)
+        private CommandBuffer GetCommandBuffer<T>(CameraEvent evt, string name)
             where T : PostProcessingModel
         {
             CommandBuffer cb;
-            KeyValuePair<CameraEvent, CommandBuffer> kvp;
 
-            if (!m_CommandBuffers.TryGetValue(typeof(T), out kvp))
+            if (!m_CommandBuffers.TryGetValue(typeof(T), out KeyValuePair<CameraEvent, CommandBuffer> kvp))
             {
                 cb = AddCommandBuffer<T>(evt, name);
             }
@@ -431,34 +471,42 @@ namespace UnityEngine.PostProcessing
                 RemoveCommandBuffer<T>();
                 cb = AddCommandBuffer<T>(evt, name);
             }
-            else cb = kvp.Value;
+            else
+            {
+                cb = kvp.Value;
+            }
 
             return cb;
         }
 
-        void TryExecuteCommandBuffer<T>(PostProcessingComponentCommandBuffer<T> component)
+        private void TryExecuteCommandBuffer<T>(PostProcessingComponentCommandBuffer<T> component)
             where T : PostProcessingModel
         {
             if (component.active)
             {
-                var cb = GetCommandBuffer<T>(component.GetCameraEvent(), component.GetName());
+                CommandBuffer cb = GetCommandBuffer<T>(component.GetCameraEvent(), component.GetName());
                 cb.Clear();
                 component.PopulateCommandBuffer(cb);
             }
-            else RemoveCommandBuffer<T>();
+            else
+            {
+                RemoveCommandBuffer<T>();
+            }
         }
 
-        bool TryPrepareUberImageEffect<T>(PostProcessingComponentRenderTexture<T> component, Material material)
+        private bool TryPrepareUberImageEffect<T>(PostProcessingComponentRenderTexture<T> component, Material material)
             where T : PostProcessingModel
         {
             if (!component.active)
+            {
                 return false;
+            }
 
             component.Prepare(material);
             return true;
         }
 
-        T AddComponent<T>(T component)
+        private T AddComponent<T>(T component)
             where T : PostProcessingComponentBase
         {
             m_Components.Add(component);

@@ -7,7 +7,7 @@ namespace UnityEditor.PostProcessing
     [PostProcessingModelEditor(typeof(FogModel))]
     public class FogModelEditor : PostProcessingModelEditor
     {
-        SerializedProperty m_ExcludeSkybox;
+        private SerializedProperty m_ExcludeSkybox;
 
         public override void OnEnable()
         {

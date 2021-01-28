@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace UnityEngine.PostProcessing
 {
-    using UnityObject = Object;
-
     public sealed class MaterialFactory : IDisposable
     {
-        Dictionary<string, Material> m_Materials;
+        private readonly Dictionary<string, Material> m_Materials;
 
         public MaterialFactory()
         {
@@ -16,14 +14,15 @@ namespace UnityEngine.PostProcessing
 
         public Material Get(string shaderName)
         {
-            Material material;
 
-            if (!m_Materials.TryGetValue(shaderName, out material))
+            if (!m_Materials.TryGetValue(shaderName, out Material material))
             {
-                var shader = Shader.Find(shaderName);
+                Shader shader = Shader.Find(shaderName);
 
                 if (shader == null)
+                {
                     throw new ArgumentException(string.Format("Shader not found ({0})", shaderName));
+                }
 
                 material = new Material(shader)
                 {
@@ -39,10 +38,10 @@ namespace UnityEngine.PostProcessing
 
         public void Dispose()
         {
-            var enumerator = m_Materials.GetEnumerator();
+            Dictionary<string, Material>.Enumerator enumerator = m_Materials.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var material = enumerator.Current.Value;
+                Material material = enumerator.Current.Value;
                 GraphicsUtils.Destroy(material);
             }
 

@@ -2,12 +2,12 @@ using UnityEngine.Rendering;
 
 namespace UnityEngine.PostProcessing
 {
-    using SSRResolution = ScreenSpaceReflectionModel.SSRResolution;
     using SSRReflectionBlendType = ScreenSpaceReflectionModel.SSRReflectionBlendType;
+    using SSRResolution = ScreenSpaceReflectionModel.SSRResolution;
 
     public sealed class ScreenSpaceReflectionComponent : PostProcessingComponentCommandBuffer<ScreenSpaceReflectionModel>
     {
-        static class Uniforms
+        private static class Uniforms
         {
             internal static readonly int _RayStepSize                = Shader.PropertyToID("_RayStepSize");
             internal static readonly int _AdditiveReflection         = Shader.PropertyToID("_AdditiveReflection");
@@ -47,12 +47,12 @@ namespace UnityEngine.PostProcessing
         }
 
         // Unexposed variables
-        bool k_HighlightSuppression = false;
-        bool k_TraceBehindObjects = true;
-        bool k_TreatBackfaceHitAsMiss = false;
-        bool k_BilateralUpsample = true;
+        private readonly bool k_HighlightSuppression = false;
+        private readonly bool k_TraceBehindObjects = true;
+        private readonly bool k_TreatBackfaceHitAsMiss = false;
+        private readonly bool k_BilateralUpsample = true;
 
-        enum PassIndex
+        private enum PassIndex
         {
             RayTraceStep = 0,
             CompositeFinal = 1,
@@ -65,7 +65,7 @@ namespace UnityEngine.PostProcessing
             PoissonBlur = 8,
         }
 
-        readonly int[] m_ReflectionTextures = new int[5];
+        private readonly int[] m_ReflectionTextures = new int[5];
 
         // Not really needed as SSR only works in deferred right now
         public override DepthTextureMode GetCameraFlags()
@@ -73,15 +73,9 @@ namespace UnityEngine.PostProcessing
             return DepthTextureMode.Depth;
         }
 
-        public override bool active
-        {
-            get
-            {
-                return model.enabled
+        public override bool active => model.enabled
                        && context.isGBufferAvailable
                        && !context.interrupted;
-            }
-        }
 
         public override void OnEnable()
         {
@@ -104,14 +98,14 @@ namespace UnityEngine.PostProcessing
 
         public override void PopulateCommandBuffer(CommandBuffer cb)
         {
-            var settings = model.settings;
-            var camera = context.camera;
+            ScreenSpaceReflectionModel.Settings settings = model.settings;
+            Camera camera = context.camera;
 
             // Material setup
             int downsampleAmount = (settings.reflection.reflectionQuality == SSRResolution.High) ? 1 : 2;
 
-            var rtW = context.width / downsampleAmount;
-            var rtH = context.height / downsampleAmount;
+            int rtW = context.width / downsampleAmount;
+            int rtH = context.height / downsampleAmount;
 
             float sWidth = context.width;
             float sHeight = context.height;
@@ -119,7 +113,7 @@ namespace UnityEngine.PostProcessing
             float sx = sWidth / 2f;
             float sy = sHeight / 2f;
 
-            var material = context.materialFactory.Get("Hidden/Post FX/Screen Space Reflection");
+            Material material = context.materialFactory.Get("Hidden/Post FX/Screen Space Reflection");
 
             material.SetInt(Uniforms._RayStepSize, settings.reflection.stepSize);
             material.SetInt(Uniforms._AdditiveReflection, settings.reflection.blendType == SSRReflectionBlendType.Additive ? 1 : 0);
@@ -145,15 +139,15 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._FresnelFade, settings.intensity.fresnelFade);
             material.SetFloat(Uniforms._FresnelFadePower, settings.intensity.fresnelFadePower);
 
-            var P = camera.projectionMatrix;
-            var projInfo = new Vector4(
+            Matrix4x4 P = camera.projectionMatrix;
+            Vector4 projInfo = new Vector4(
                     -2f / (sWidth * P[0]),
                     -2f / (sHeight * P[5]),
                     (1f - P[2]) / P[0],
                     (1f + P[6]) / P[5]
                     );
 
-            var cameraClipInfo = float.IsPositiveInfinity(camera.farClipPlane) ?
+            Vector3 cameraClipInfo = float.IsPositiveInfinity(camera.farClipPlane) ?
                 new Vector3(camera.nearClipPlane, -1f, 1f) :
                 new Vector3(camera.nearClipPlane * camera.farClipPlane, camera.nearClipPlane - camera.farClipPlane, camera.farClipPlane);
 
@@ -164,28 +158,28 @@ namespace UnityEngine.PostProcessing
 
             material.SetVector(Uniforms._CameraClipInfo, cameraClipInfo);
 
-            var warpToScreenSpaceMatrix = new Matrix4x4();
+            Matrix4x4 warpToScreenSpaceMatrix = new Matrix4x4();
             warpToScreenSpaceMatrix.SetRow(0, new Vector4(sx, 0f, 0f, sx));
             warpToScreenSpaceMatrix.SetRow(1, new Vector4(0f, sy, 0f, sy));
             warpToScreenSpaceMatrix.SetRow(2, new Vector4(0f, 0f, 1f, 0f));
             warpToScreenSpaceMatrix.SetRow(3, new Vector4(0f, 0f, 0f, 1f));
 
-            var projectToPixelMatrix = warpToScreenSpaceMatrix * P;
+            Matrix4x4 projectToPixelMatrix = warpToScreenSpaceMatrix * P;
 
             material.SetMatrix(Uniforms._ProjectToPixelMatrix, projectToPixelMatrix);
             material.SetMatrix(Uniforms._WorldToCameraMatrix, camera.worldToCameraMatrix);
             material.SetMatrix(Uniforms._CameraToWorldMatrix, camera.worldToCameraMatrix.inverse);
 
             // Command buffer setup
-            var intermediateFormat = context.isHdr ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
+            RenderTextureFormat intermediateFormat = context.isHdr ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
             const int maxMip = 5;
 
-            var kNormalAndRoughnessTexture = Uniforms._NormalAndRoughnessTexture;
-            var kHitPointTexture = Uniforms._HitPointTexture;
-            var kBlurTexture = Uniforms._BlurTexture;
-            var kFilteredReflections = Uniforms._FilteredReflections;
-            var kFinalReflectionTexture = Uniforms._FinalReflectionTexture;
-            var kTempTexture = Uniforms._TempTexture;
+            int kNormalAndRoughnessTexture = Uniforms._NormalAndRoughnessTexture;
+            int kHitPointTexture = Uniforms._HitPointTexture;
+            int kBlurTexture = Uniforms._BlurTexture;
+            int kFilteredReflections = Uniforms._FilteredReflections;
+            int kFinalReflectionTexture = Uniforms._FinalReflectionTexture;
+            int kTempTexture = Uniforms._TempTexture;
 
             // RGB: Normals, A: Roughness.
             // Has the nice benefit of allowing us to control the filtering mode as well.

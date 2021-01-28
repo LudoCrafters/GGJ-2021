@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System.IO;
 using UnityEditor;
-using System.IO;
+using UnityEngine;
 
 
 namespace ILranch
@@ -8,25 +8,25 @@ namespace ILranch
     [InitializeOnLoad]
     public class SettingsPrompt : EditorWindow
     {
-
-        static bool showdialogwindow = true;
-        static SettingsPrompt dialogwindow;
-        string valuename;
-        static int defaultqualitylevel;
-        static string prefkey;
-        static bool pressed1;
-        static bool pressed2;
-        static bool pressed3;
+        private static bool showdialogwindow = true;
+        private static SettingsPrompt dialogwindow;
+        private string valuename;
+        private static int defaultqualitylevel;
+        private static string prefkey;
+        private static bool pressed1;
+        private static bool pressed2;
+        private static bool pressed3;
 
 
         static SettingsPrompt()
         {
             EditorApplication.update += Update;
         }
-        static void Update()
+
+        private static void Update()
         {
-            var datapath = Application.dataPath;
-            var strval = datapath.Split("/"[0]);
+            string datapath = Application.dataPath;
+            string[] strval = datapath.Split("/"[0]);
             prefkey = strval[strval.Length - 2];
 
             showdialogwindow = (!EditorPrefs.HasKey(prefkey));
@@ -39,7 +39,7 @@ namespace ILranch
             EditorApplication.update -= Update;
         }
 
-        string AntiAlias()
+        private string AntiAlias()
         {
             if(QualitySettings.antiAliasing == 0)
             {
@@ -52,7 +52,7 @@ namespace ILranch
             return valuename;
         }
 
-        string QualityLevel()
+        private string QualityLevel()
         {
             string[] names = QualitySettings.names;
             int currentlevel = QualitySettings.GetQualityLevel();
@@ -67,7 +67,7 @@ namespace ILranch
             return valuename;
         }
 
-        string SColorSpace()
+        private string SColorSpace()
         {
             if (PlayerSettings.colorSpace == ColorSpace.Linear)
             {
@@ -82,7 +82,7 @@ namespace ILranch
 
         public void OnGUI()
         {
-            var rect = GUILayoutUtility.GetRect(position.width-10, 100, GUI.skin.box);
+            Rect rect = GUILayoutUtility.GetRect(position.width-10, 100, GUI.skin.box);
 
             Texture2D ilranchlogo = AssetDatabase.LoadAssetAtPath<Texture2D>(
                 Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))) + "/LogoDialog.png");
@@ -97,8 +97,14 @@ namespace ILranch
             EditorGUILayout.HelpBox("IL.ranch package DemoScene uses Post Processing Stack (Version 1). Recommended project settings for it:", MessageType.None);
             EditorGUILayout.HelpBox("1. Linear ColorSpace", MessageType.None);
 
-            if (!pressed1) GUI.backgroundColor = Color.yellow;
-            else GUI.backgroundColor = Color.green;
+            if (!pressed1)
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
+            else
+            {
+                GUI.backgroundColor = Color.green;
+            }
 
             if (GUILayout.Button("current 'ColorSpace' is: " + SColorSpace()))
             {
@@ -117,8 +123,14 @@ namespace ILranch
             GUI.backgroundColor = Color.clear;
             EditorGUILayout.HelpBox("2. Maximum QualityLevel", MessageType.None);
 
-            if (!pressed2) GUI.backgroundColor = Color.yellow;
-            else GUI.backgroundColor = Color.green;
+            if (!pressed2)
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
+            else
+            {
+                GUI.backgroundColor = Color.green;
+            }
 
             if (GUILayout.Button("current 'QualityLevel' is: " + QualityLevel()))
             {
