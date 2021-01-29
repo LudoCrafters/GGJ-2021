@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Trap : MonoBehaviour
 {
-    public Player player;
+    private Player player;
     private Animator trapAnimator;
     private bool isActive = false;
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         trapAnimator = GetComponent<Animator>();
     }
 

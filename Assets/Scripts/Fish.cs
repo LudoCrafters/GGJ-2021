@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
-    public Player player;
+    private Player player;
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
