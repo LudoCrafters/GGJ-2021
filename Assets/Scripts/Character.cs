@@ -27,10 +27,6 @@ public class Character : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
-
-        // Lock cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     void Update()
