@@ -27,6 +27,8 @@ public class Character : MonoBehaviour
     [HideInInspector]
     public bool canMove = true;
 
+    private float lastAttack = 0;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -99,9 +101,14 @@ public class Character : MonoBehaviour
         // attack
         if (Input.GetButtonDown("Fire1"))
         {
-            characterAnimator.SetTrigger("Attack");
-            playerSound.playAttackSound();
-            Attack();
+            if (lastAttack < Time.time - 1f)
+            {
+                characterAnimator.SetTrigger("Attack");
+                playerSound.playAttackSound();
+                Attack();
+
+                lastAttack = Time.time;
+            }
         }
     }
 
