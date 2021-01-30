@@ -5,12 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    private Player player;
+
     private GameObject menu;
     private GameObject dialog;
     private GameObject setting;
 
+    public ProgressBarCircle healthBar;
+    public ProgressBarCircle hungerBar;
+
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
         menu = transform.Find("Menu").gameObject;
         dialog = menu.transform.Find("Dialog").gameObject;
         setting = menu.transform.Find("SettingsCustom").gameObject;
@@ -21,6 +28,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // 메인 메뉴
         if (Input.GetKeyUp(KeyCode.Escape))
         {
             bool active = !menu.activeSelf;
@@ -39,6 +47,10 @@ public class UIManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }
+
+        // bar
+        healthBar.BarValue = Mathf.Round(player.hp * 100) / 100f;
+        hungerBar.BarValue = Mathf.Round(player.hunger * 100) / 100f;
     }
 
     public void resume()
