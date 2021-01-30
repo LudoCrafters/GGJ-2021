@@ -411,11 +411,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2393199107045491646, guid: ff7b5982fc970924f9d17260a0f60d6b, type: 3}
   m_PrefabInstance: {fileID: 451547355}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &607035140 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
-  m_PrefabInstance: {fileID: 1528032219}
-  m_PrefabAsset: {fileID: 0}
 --- !u!218 &637124264 stripped
 Terrain:
   m_CorrespondingSourceObject: {fileID: 735792627783242663, guid: 9dff9075c0e5a254caccb486bc0c8c5b, type: 3}
@@ -862,6 +857,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9dff9075c0e5a254caccb486bc0c8c5b, type: 3}
+--- !u!114 &1458688373 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1901647337, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+  m_PrefabInstance: {fileID: 1528032219}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96a67727454079c4fa26d5736c411ea3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1463146684 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4856715148525531289, guid: 9dff9075c0e5a254caccb486bc0c8c5b, type: 3}
@@ -1004,7 +1010,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1000
+      value: 1051.2
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1012,7 +1018,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1000
+      value: 1016.1
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1233,7 +1239,7 @@ PrefabInstance:
     - target: {fileID: 5626545825544782659, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 607035140}
+      objectReference: {fileID: 1458688373}
     - target: {fileID: 8451581338947325046, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: m_Name
       value: Hunter

@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     public NavMeshAgent agent;
 
-    public Transform player;
+    public Player player;
 
     public LayerMask whatIsGround, whatIsPlayer;
 
@@ -33,6 +33,11 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
     }
 
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
+
     // Update is called once per frame
     private void Update()
     {
@@ -51,13 +56,14 @@ public class EnemyAI : MonoBehaviour
         // 안움직이게
         agent.SetDestination(transform.position);
 
-        transform.LookAt(player);
+        transform.LookAt(player.transform);
         
         if(!alreadyAttacked)
         {
             // 공격 애니메이션
             animator.SetBool("Shot", true);
             animator.SetBool("Reload", false);
+            player.hurt(30.0f);
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttack);
@@ -110,7 +116,7 @@ public class EnemyAI : MonoBehaviour
 
     private void ChasePlayer()
     {
-        agent.SetDestination(player.position);
+        agent.SetDestination(player.transform.position);
     }
 
     private void Patrolloing()

@@ -44,9 +44,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void hurt()
+    public void hurt(float damage)
     {
-        hp -= 50;
+        hp -= damage;
         playerSound.playTrapSound();
     }
     public void eat(int amount)

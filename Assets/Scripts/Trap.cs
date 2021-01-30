@@ -19,7 +19,7 @@ public class Trap : MonoBehaviour
         if (!isActive)
         {
             trapAnimator.SetTrigger("Active");
-            player.hurt();
+            player.hurt(50.0f);
 
             isActive = true;
         }
