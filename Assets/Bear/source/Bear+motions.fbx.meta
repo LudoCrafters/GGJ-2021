@@ -154,8 +154,8 @@ ModelImporter:
       name: atk stand2_CINEMA_4D_Main
       takeName: atk stand2_CINEMA_4D_Main
       internalID: 0
-      firstFrame: 0
-      lastFrame: 120
+      firstFrame: 15
+      lastFrame: 31
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

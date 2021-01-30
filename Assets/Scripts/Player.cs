@@ -7,6 +7,10 @@ public class Player : MonoBehaviour
     public float hp = 100;
     public float hunger = 100;
     private PlayerSound playerSound;
+    public int toFindBabyCount = 2;
+    public int currentBabyCount = 0;
+
+    private bool died = false;
 
     void Start()
     {
@@ -14,6 +18,11 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
+        if (died)
+        {
+            return;
+        }
+
         // ¹è°íÆÄÁü
         hunger -= 0.1f * Time.deltaTime;
 
@@ -29,9 +38,9 @@ public class Player : MonoBehaviour
         {
             hp = 0;
             playerSound.playDyingSound();
+            playerSound.playGameOverSound();
 
-            // TODO
-            // GAME OVER
+            died = true;
         }
     }
 
@@ -44,5 +53,17 @@ public class Player : MonoBehaviour
     {
         hunger = Mathf.Min(hunger + amount, 100);
         playerSound.playEatingSound();
+    }
+
+    public void findBaby()
+    {
+        ++currentBabyCount;
+
+        if (currentBabyCount >= toFindBabyCount)
+        {
+            // TODO
+            // GAME WINS
+            playerSound.playGameWinSound();
+        }
     }
 }

@@ -10,9 +10,13 @@ public class UIManager : MonoBehaviour
     private GameObject menu;
     private GameObject dialog;
     private GameObject setting;
+    private GameObject gameClear;
+    private GameObject gameOver;
 
     public ProgressBarCircle healthBar;
     public ProgressBarCircle hungerBar;
+
+    private bool gameEnd = false;
 
     void Start()
     {
@@ -21,6 +25,11 @@ public class UIManager : MonoBehaviour
         menu = transform.Find("Menu").gameObject;
         dialog = menu.transform.Find("Dialog").gameObject;
         setting = menu.transform.Find("SettingsCustom").gameObject;
+        gameClear = transform.Find("GameClear").gameObject;
+        gameOver = transform.Find("GameOver").gameObject;
+
+        gameClear.SetActive(false);
+        gameOver.SetActive(false);
 
         resume();
     }
@@ -28,6 +37,11 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameEnd)
+        {
+            return;
+        }
+
         // 메인 메뉴
         if (Input.GetKeyUp(KeyCode.Escape))
         {
@@ -51,6 +65,34 @@ public class UIManager : MonoBehaviour
         // bar
         healthBar.BarValue = Mathf.Round(player.hp * 100) / 100f;
         hungerBar.BarValue = Mathf.Round(player.hunger * 100) / 100f;
+
+        // health 0
+        if (player.hp <= 0)
+        {
+            gameOver.SetActive(true);
+            gameEnd = true;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            Time.timeScale = 0;
+            Destroy(healthBar.gameObject);
+            Destroy(player);
+        }
+
+        // baby
+        if (player.toFindBabyCount <= player.currentBabyCount)
+        {
+            gameClear.SetActive(true);
+            gameEnd = true;
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            Time.timeScale = 0;
+            Destroy(healthBar.gameObject);
+            Destroy(player);
+        }
     }
 
     public void resume()
@@ -71,6 +113,7 @@ public class UIManager : MonoBehaviour
 
     public void restart()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

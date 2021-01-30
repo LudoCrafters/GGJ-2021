@@ -13,7 +13,11 @@ public class Character : MonoBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
 
+
+    Dictionary<string, GameObject> enemies;
+
     public Animator characterAnimator;
+    PlayerSound playerSound;
 
     private Camera cam;
     CharacterController characterController;
@@ -26,7 +30,9 @@ public class Character : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        playerSound = GetComponent<PlayerSound>();
         cam = Camera.main;
+        enemies = new Dictionary<string, GameObject>();
     }
 
     void Update()
@@ -89,5 +95,47 @@ public class Character : MonoBehaviour
             characterAnimator.SetBool("IsWalking", false);
             characterAnimator.SetBool("IsRunning", false);
         }
+
+        // attack
+        if (Input.GetButtonDown("Fire1"))
+        {
+            characterAnimator.SetTrigger("Attack");
+            playerSound.playAttackSound();
+            Attack();
+        }
     }
+
+
+    // attack range trigger
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            enemies.Add(other.gameObject.name, other.gameObject);
+
+            Debug.Log("Enter" + other.gameObject.name);
+
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            enemies.Remove(other.gameObject.name);
+
+            Debug.Log("Exit" + other.gameObject.name);
+        }
+    }
+
+    void Attack()
+    {
+        foreach (KeyValuePair<string, GameObject> each in enemies)
+        {
+            string K = each.Key;
+            GameObject g = each.Value;
+
+            Debug.Log(K, g);
+        }
+    }
+
 }
