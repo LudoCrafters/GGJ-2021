@@ -111,6 +111,8 @@ MonoBehaviour:
   dyingSound: {fileID: 8300000, guid: f31f881d313b2f34fb213a10da77ee74, type: 3}
   eatingSound: {fileID: 8300000, guid: 52ec80582a102cc49ab83a9794203764, type: 3}
   attackSound: {fileID: 8300000, guid: 0d9c606d65dbbd94c904b71559447ff8, type: 3}
+  gameWinSound: {fileID: 8300000, guid: e86cf909cbed99149905170113e26ea5, type: 3}
+  gameOverSound: {fileID: 8300000, guid: eec775d4e80d3de4591b2d46867b531b, type: 3}
 --- !u!114 &1901647337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,6 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hp: 100
   hunger: 100
+  toFindBabyCount: 2
 --- !u!82 &-8113164158683811116
 AudioSource:
   m_ObjectHideFlags: 0
