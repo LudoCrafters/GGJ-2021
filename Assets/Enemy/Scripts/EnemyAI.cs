@@ -56,7 +56,8 @@ public class EnemyAI : MonoBehaviour
         if(!alreadyAttacked)
         {
             // 공격 애니메이션
-            animator.SetTrigger("Shot");
+            animator.SetBool("Shot", true);
+            animator.SetBool("Reload", false);
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttack);
@@ -65,7 +66,9 @@ public class EnemyAI : MonoBehaviour
 
     public void Reload()
     {
-        animator.SetTrigger("Reload");
+        // 공격 애니메이션
+        animator.SetBool("Shot", false);
+        animator.SetBool("Reload", true);
     }
 
     private void ResetAttack()
