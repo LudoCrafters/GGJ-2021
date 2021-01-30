@@ -128,6 +128,7 @@ MonoBehaviour:
   hp: 100
   hunger: 100
   toFindBabyCount: 2
+  currentBabyCount: 0
 --- !u!82 &-8113164158683811116
 AudioSource:
   m_ObjectHideFlags: 0
@@ -135,7 +136,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7969559986734949175}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: d6869ac124e49264a8efbde091a58e17, type: 3}

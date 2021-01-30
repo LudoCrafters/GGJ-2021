@@ -8,7 +8,9 @@ public class Player : MonoBehaviour
     public float hunger = 100;
     private PlayerSound playerSound;
     public int toFindBabyCount = 2;
-    private int currentBabyCount = 0;
+    public int currentBabyCount = 0;
+
+    private bool died = false;
 
     void Start()
     {
@@ -16,6 +18,11 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
+        if (died)
+        {
+            return;
+        }
+
         // ¹è°íÆÄÁü
         hunger -= 0.1f * Time.deltaTime;
 
@@ -31,9 +38,9 @@ public class Player : MonoBehaviour
         {
             hp = 0;
             playerSound.playDyingSound();
+            playerSound.playGameOverSound();
 
-            // TODO
-            // GAME OVER
+            died = true;
         }
     }
 
