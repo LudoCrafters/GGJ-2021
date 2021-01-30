@@ -1009,6 +1009,18 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1051.2
       objectReference: {fileID: 0}
@@ -1047,6 +1059,18 @@ PrefabInstance:
     - target: {fileID: 7969559986734949160, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949162, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: jumpSpeed
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949162, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: runningSpeed
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949162, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: walkingSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7969559986734949175, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_Name
@@ -1236,10 +1260,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5626545825544782656, guid: 428e659b19e109c418b610424739878b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5626545825544782659, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 1458688373}
+    - target: {fileID: 5626545825544782659, guid: 428e659b19e109c418b610424739878b, type: 3}
+      propertyPath: sightRange
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 5626545825544782659, guid: 428e659b19e109c418b610424739878b, type: 3}
+      propertyPath: shotgunSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 30fd10b2036f5b74b864f513d51db3ff, type: 3}
     - target: {fileID: 8451581338947325046, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: m_Name
       value: Hunter
@@ -1247,6 +1283,10 @@ PrefabInstance:
     - target: {fileID: 8451581338947325046, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8451581338947325046, guid: 428e659b19e109c418b610424739878b, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 9079781176523544268, guid: 428e659b19e109c418b610424739878b, type: 3}
       propertyPath: m_RootOrder

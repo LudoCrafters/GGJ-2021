@@ -114,12 +114,18 @@ public class Character : MonoBehaviour
 
 
     // attack range trigger
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Enemy")
         {
             enemies.Add(other.gameObject.name, other.gameObject);
 
+            EnemyAI enemy = other.GetComponentInParent<EnemyAI>();
+            enemy.TakeDamage(10);
             Debug.Log("Enter" + other.gameObject.name);
 
         }

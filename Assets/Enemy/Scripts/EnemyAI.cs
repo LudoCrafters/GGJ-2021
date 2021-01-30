@@ -28,6 +28,8 @@ public class EnemyAI : MonoBehaviour
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
 
+    public AudioClip shotgunSound;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -41,8 +43,11 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        Vector3 forwardInSight = transform.localRotation * Vector3.forward * sightRange;
+        Vector3 forwardInAttack = transform.localRotation * Vector3.forward * attackRange;
+
+        playerInSightRange = Physics.CheckBox(transform.position + forwardInSight / 2,new Vector3(sightRange / 2, sightRange / 2, sightRange / 2), transform.rotation, whatIsPlayer);
+        playerInAttackRange = Physics.CheckBox(transform.position + forwardInAttack / 2, new Vector3(attackRange / 2, attackRange / 2, attackRange / 2), transform.rotation, whatIsPlayer);
 
         if (!playerInSightRange && !playerInAttackRange) Patrolloing();
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
@@ -53,20 +58,23 @@ public class EnemyAI : MonoBehaviour
 
     private void AttackPlayer()
     {
-        // 안움직이게
-        agent.SetDestination(transform.position);
-
-        transform.LookAt(player.transform);
-        
-        if(!alreadyAttacked)
+        if(player != null)
         {
-            // 공격 애니메이션
-            animator.SetBool("Shot", true);
-            animator.SetBool("Reload", false);
-            player.hurt(30.0f);
+            // 안움직이게
+            agent.SetDestination(transform.position);
 
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttack);
+            transform.LookAt(player.transform);
+
+            if (!alreadyAttacked)
+            {
+                // 공격 애니메이션
+                animator.SetBool("Shot", true);
+                animator.SetBool("Reload", false);
+                player.hurt(30.0f);
+
+                alreadyAttacked = true;
+                Invoke(nameof(ResetAttack), timeBetweenAttack);
+            }
         }
     }
 
@@ -95,15 +103,6 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
-    }
-
-
     private void SearchWalkPoint()
     {
         float randomZ = UnityEngine.Random.Range(-walkPointRange, walkPointRange);
@@ -116,7 +115,10 @@ public class EnemyAI : MonoBehaviour
 
     private void ChasePlayer()
     {
-        agent.SetDestination(player.transform.position);
+        if(player != null)
+        {
+            agent.SetDestination(player.transform.position);
+        }
     }
 
     private void Patrolloing()
@@ -132,5 +134,9 @@ public class EnemyAI : MonoBehaviour
             walkPointSet = false;
     }
 
+    public void playshotgunSound()
+    {
+        AudioSource.PlayClipAtPoint(shotgunSound, transform.position);
+    }
 
 }
