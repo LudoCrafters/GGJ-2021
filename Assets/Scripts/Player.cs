@@ -40,9 +40,9 @@ public class Player : MonoBehaviour
         hp -= 50;
         playerSound.playTrapSound();
     }
-    public void eat()
+    public void eat(int amount)
     {
-        hunger = Mathf.Min(hunger + 10, 100);
+        hunger = Mathf.Min(hunger + amount, 100);
         playerSound.playEatingSound();
     }
 }

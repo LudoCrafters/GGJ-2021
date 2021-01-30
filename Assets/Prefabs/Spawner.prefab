@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5134766548490064487
+--- !u!1 &5965345519136672720
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5134766548490064473}
-  - component: {fileID: 5134766548490064472}
+  - component: {fileID: 5965345519136672750}
+  - component: {fileID: 5965345519136672751}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5134766548490064473
+--- !u!4 &5965345519136672750
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5134766548490064487}
+  m_GameObject: {fileID: 5965345519136672720}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,13 +31,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5134766548490064472
+--- !u!114 &5965345519136672751
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5134766548490064487}
+  m_GameObject: {fileID: 5965345519136672720}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bebf6913b87c9a45828b9de765e4d09, type: 3}
@@ -49,3 +49,8 @@ MonoBehaviour:
   fishCount: 100
   trap: {fileID: 7989910112242981481, guid: 235cb6a3fc4180741b45f7bec1f4f1c9, type: 3}
   trapCount: 100
+  foods:
+  - {fileID: 1560903654769172, guid: e2a987ea1a4ff6849b750d850e5b97bf, type: 3}
+  - {fileID: 1834503257163952, guid: 980f37770423ea44b80208b00285a968, type: 3}
+  - {fileID: 1004846731592950, guid: ae8d9c7673a08834c9c4a1f22182ba31, type: 3}
+  foodsCount: 1000

@@ -11,6 +11,8 @@ public class Spawner : MonoBehaviour
     public int fishCount = 100;
     public GameObject trap;
     public int trapCount = 100;
+    public GameObject[] foods;
+    public int foodsCount = 1000;
     // public GameObject hunter;
 
     private float terrainWidth;
@@ -39,6 +41,14 @@ public class Spawner : MonoBehaviour
         for (int i = 0; i < fishCount; i++)
         {
             generateObjectOnTerrain(trap);
+        }
+
+        for (int i = 0; i < foods.Length; i++)
+        {
+            for (int j = 0; j < foodsCount; j++)
+            {
+                generateObjectOnTerrain(foods[i]);
+            }
         }
     }
 
