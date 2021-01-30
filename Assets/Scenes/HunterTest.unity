@@ -762,7 +762,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4278294220427615390, guid: b327355731b8d3c4aa91c8b1fbe775ee, type: 3}
       propertyPath: m_Name
-      value: Enemy Variant
+      value: Hunter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b327355731b8d3c4aa91c8b1fbe775ee, type: 3}
@@ -857,6 +857,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4fdbde9b265d1459dda8e4d8e79c91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  attackStopDistanceRatio: 0.5
+  onDetectVFX: []
+  onDetectSFX: {fileID: 0}
+  MovementSound: {fileID: 0}
+  minMovementSpeed: 0
+  maxMovementSpeed: 0
 --- !u!1001 &1964546246
 PrefabInstance:
   m_ObjectHideFlags: 0
