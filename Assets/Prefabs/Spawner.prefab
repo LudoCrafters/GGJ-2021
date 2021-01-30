@@ -46,11 +46,13 @@ MonoBehaviour:
   terrain: {fileID: 0}
   water: {fileID: 0}
   fish: {fileID: 2049836085203785164, guid: 8a39d7bf1b2ab7442aeee31bc4d71b1f, type: 3}
-  fishCount: 100
+  fishCount: 200
   trap: {fileID: 7989910112242981481, guid: 235cb6a3fc4180741b45f7bec1f4f1c9, type: 3}
-  trapCount: 100
+  trapCount: 400
   foods:
   - {fileID: 1560903654769172, guid: e2a987ea1a4ff6849b750d850e5b97bf, type: 3}
   - {fileID: 1834503257163952, guid: 980f37770423ea44b80208b00285a968, type: 3}
   - {fileID: 1004846731592950, guid: ae8d9c7673a08834c9c4a1f22182ba31, type: 3}
   foodsCount: 1000
+  hunter: {fileID: 0}
+  hunterCount: 100
