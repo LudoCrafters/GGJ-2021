@@ -7,6 +7,7 @@ public class PlayerSound : MonoBehaviour
     public AudioClip trapSound;
     public AudioClip dyingSound;
     public AudioClip eatingSound;
+    public AudioClip attackSound;
 
     public void playTrapSound()
     {
@@ -20,5 +21,9 @@ public class PlayerSound : MonoBehaviour
     public void playEatingSound()
     {
         AudioSource.PlayClipAtPoint(eatingSound, transform.position);
+    }
+    public void playAttackSound()
+    {
+        AudioSource.PlayClipAtPoint(attackSound, transform.position);
     }
 }
