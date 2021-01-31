@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 193105811232424698}
   - component: {fileID: 33065013992664210}
   - component: {fileID: 23466419510729776}
+  - component: {fileID: 4233342451210318609}
   m_Layer: 0
   m_Name: RedWood 2
   m_TagString: Untagged
@@ -92,6 +93,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &4233342451210318609
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970681966781816}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.1
+  m_Height: 37.48776
+  m_Direction: 1
+  m_Center: {x: 0.01, y: 18.49388, z: 0.08}
 --- !u!21 &21440639111565978
 Material:
   serializedVersion: 6

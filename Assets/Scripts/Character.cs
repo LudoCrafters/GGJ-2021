@@ -13,7 +13,15 @@ public class Character : MonoBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
 
+    public Terrain terrain;
+    public Transform water;
+
+    public bool menuOpen = false;
+
+    Dictionary<string, GameObject> enemies;
+
     public Animator characterAnimator;
+    PlayerSound playerSound;
 
     private Camera cam;
     CharacterController characterController;
@@ -23,18 +31,23 @@ public class Character : MonoBehaviour
     [HideInInspector]
     public bool canMove = true;
 
+    private float lastAttack = 0;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        playerSound = GetComponent<PlayerSound>();
         cam = Camera.main;
-
-        // Lock cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        enemies = new Dictionary<string, GameObject>();
     }
 
     void Update()
     {
+        if (menuOpen)
+        {
+            return;
+        }
+
         // We are grounded, so recalculate move direction based on axes
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -62,8 +75,15 @@ public class Character : MonoBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         }
 
+        Vector3 originalPosition = transform.position;
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
+        float yVal = Terrain.activeTerrain.SampleHeight(new Vector3(transform.position.x +moveDirection.x, 0, transform.position.z+moveDirection.z));
+        // water limit
+        if (water.position.y > yVal + 4)
+        {
+            transform.position = new Vector3(originalPosition.x, transform.position.y, originalPosition.z);
+        }
 
         // Player and Camera rotation
         if (canMove && Input.GetMouseButton(1))
@@ -93,5 +113,72 @@ public class Character : MonoBehaviour
             characterAnimator.SetBool("IsWalking", false);
             characterAnimator.SetBool("IsRunning", false);
         }
+
+        // attack
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (lastAttack < Time.time - 1f)
+            {
+                characterAnimator.SetTrigger("Attack");
+                playerSound.playAttackSound();
+                Attack();
+
+                lastAttack = Time.time;
+            }
+        }
     }
+
+
+    // attack range trigger
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            if (enemies.ContainsKey(other.gameObject.name))
+                enemies[other.gameObject.name] = other.gameObject;
+            else
+                enemies.Add(other.gameObject.name, other.gameObject);
+
+            Debug.Log("Enter" + other.gameObject.name);
+
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            if (!enemies.ContainsKey(other.gameObject.name))
+            {
+                return;
+            }
+            enemies.Remove(other.gameObject.name);
+
+            Debug.Log("Exit" + other.gameObject.name);
+        }
+    }
+
+    void Attack()
+    {
+        foreach (KeyValuePair<string, GameObject> each in enemies)
+        {
+            string K = each.Key;
+            GameObject g = each.Value;
+
+            if (g == null)
+            {
+                continue;
+            }
+
+            Debug.Log(g);
+
+            EnemyAI enemy = g.GetComponentInParent<EnemyAI>();
+            enemy.TakeDamage(10);
+            playerSound.playEnemySound();
+        }
+    }
+
 }
