@@ -123,10 +123,9 @@ public class Character : MonoBehaviour
         if (other.gameObject.tag == "Enemy")
         {
             if (enemies.ContainsKey(other.gameObject.name))
-            {
-                return;
-            }
-            enemies.Add(other.gameObject.name, other.gameObject);
+                enemies[other.gameObject.name] = other.gameObject;
+            else
+                enemies.Add(other.gameObject.name, other.gameObject);
 
             Debug.Log("Enter" + other.gameObject.name);
 

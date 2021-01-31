@@ -16,6 +16,10 @@ public class EnemyAI : MonoBehaviour
 
     public float health;
 
+    public GameObject meat;
+
+    public Camera camera;
+
     // patroling
     public Vector3 walkPoint;
     bool walkPointSet;
@@ -33,6 +37,7 @@ public class EnemyAI : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        camera = GetComponent<Camera>();
     }
 
     private void Start()
@@ -101,6 +106,8 @@ public class EnemyAI : MonoBehaviour
 
     private void DestroyEnemy()
     {
+        GameObject objInstance = Instantiate(meat, this.transform.position, Quaternion.identity);
+        objInstance.transform.parent = this.transform.root;
         Destroy(gameObject);
     }
 

@@ -13,8 +13,11 @@ public class Food : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        player.eat(amount);
+        if (other.gameObject.tag == "Player")
+        {
+            player.eat(amount);
 
-        Destroy(this.gameObject);
+            Destroy(this.gameObject);
+        }
     }
 }
