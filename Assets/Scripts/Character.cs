@@ -16,6 +16,8 @@ public class Character : MonoBehaviour
     public Terrain terrain;
     public Transform water;
 
+    public bool menuOpen = false;
+
     Dictionary<string, GameObject> enemies;
 
     public Animator characterAnimator;
@@ -41,6 +43,11 @@ public class Character : MonoBehaviour
 
     void Update()
     {
+        if (menuOpen)
+        {
+            return;
+        }
+
         // We are grounded, so recalculate move direction based on axes
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
