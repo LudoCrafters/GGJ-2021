@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     private Player player;
+    private Character character;
 
     private GameObject menu;
     private GameObject dialog;
@@ -23,6 +24,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        character = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
 
         menu = transform.Find("Menu").gameObject;
         dialog = menu.transform.Find("Dialog").gameObject;
@@ -49,6 +51,7 @@ public class UIManager : MonoBehaviour
         {
             bool active = !menu.activeSelf;
 
+            character.menuOpen = active;
             menu.SetActive(active);
             dialog.SetActive(false);
             setting.SetActive(false);
@@ -99,6 +102,7 @@ public class UIManager : MonoBehaviour
 
     public void resume()
     {
+        character.menuOpen = false;
         menu.SetActive(false);
         dialog.SetActive(false);
         setting.SetActive(false);

@@ -1278,7 +1278,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Credits
+  m_Text: 
 --- !u!1001 &1666008476
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2075,6 +2075,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8502463431858635023, guid: 5e77011300b5d8a4db6af0dc3b28f2e3, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e77011300b5d8a4db6af0dc3b28f2e3, type: 3}
 --- !u!224 &6221916020565322296 stripped
@@ -2441,6 +2445,10 @@ PrefabInstance:
     - target: {fileID: 11456444, guid: c28991e1542f19546989d5741dc2b591, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 11462604, guid: c28991e1542f19546989d5741dc2b591, type: 3}
+      propertyPath: m_Text
+      value: Credits
       objectReference: {fileID: 0}
     - target: {fileID: 11498860, guid: c28991e1542f19546989d5741dc2b591, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
