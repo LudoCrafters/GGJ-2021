@@ -1415,6 +1415,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1463146684}
     - target: {fileID: 5965345519136672751, guid: eeec5183f40492942b5d1adbc7523e18, type: 3}
+      propertyPath: hunter
+      value: 
+      objectReference: {fileID: 2915465102000367330, guid: 8cb2c0ca18c65bc4f97d12365ea92de7, type: 3}
+    - target: {fileID: 5965345519136672751, guid: eeec5183f40492942b5d1adbc7523e18, type: 3}
       propertyPath: terrain
       value: 
       objectReference: {fileID: 637124264}

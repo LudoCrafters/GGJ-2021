@@ -48,10 +48,9 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        Vector3 forwardInSight = transform.localRotation * Vector3.forward * sightRange;
         Vector3 forwardInAttack = transform.localRotation * Vector3.forward * attackRange;
 
-        playerInSightRange = Physics.CheckBox(transform.position + forwardInSight / 2, new Vector3(sightRange / 2, sightRange / 2, sightRange / 2), transform.rotation, whatIsPlayer);
+        playerInSightRange = IsVisible(player);
         playerInAttackRange = Physics.CheckBox(transform.position + forwardInAttack / 2, new Vector3(attackRange / 2, attackRange / 2, attackRange / 2), transform.rotation, whatIsPlayer);
 
         if (!playerInSightRange && !playerInAttackRange) Patrolloing();
@@ -59,6 +58,18 @@ public class EnemyAI : MonoBehaviour
         if (playerInAttackRange && playerInSightRange) AttackPlayer();
 
         animator.SetFloat("Speed", agent.velocity.magnitude);
+    }
+
+    private bool IsVisible(Player player)
+    {
+        Renderer renderers = player.GetComponent<Renderer>();
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(camera);
+
+        if (GeometryUtility.TestPlanesAABB(planes, renderers.bounds))
+            return true;
+        else
+            return false;
     }
 
     private void AttackPlayer()
