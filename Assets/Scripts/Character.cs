@@ -122,10 +122,12 @@ public class Character : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            if (enemies.ContainsKey(other.gameObject.name))
+            {
+                return;
+            }
             enemies.Add(other.gameObject.name, other.gameObject);
 
-            EnemyAI enemy = other.GetComponentInParent<EnemyAI>();
-            enemy.TakeDamage(10);
             Debug.Log("Enter" + other.gameObject.name);
 
         }
@@ -134,6 +136,10 @@ public class Character : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
+            if (!enemies.ContainsKey(other.gameObject.name))
+            {
+                return;
+            }
             enemies.Remove(other.gameObject.name);
 
             Debug.Log("Exit" + other.gameObject.name);
@@ -147,7 +153,16 @@ public class Character : MonoBehaviour
             string K = each.Key;
             GameObject g = each.Value;
 
-            Debug.Log(K, g);
+            if (g == null)
+            {
+                continue;
+            }
+
+            Debug.Log(g);
+
+            EnemyAI enemy = g.GetComponentInParent<EnemyAI>();
+            enemy.TakeDamage(10);
+            playerSound.playEnemySound();
         }
     }
 

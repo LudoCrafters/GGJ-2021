@@ -10,10 +10,11 @@ public class PlayerSound : MonoBehaviour
     public AudioClip attackSound;
     public AudioClip gameWinSound;
     public AudioClip gameOverSound;
+    public AudioClip enemySound;
 
     public void playTrapSound()
     {
-        AudioSource.PlayClipAtPoint(trapSound, transform.position);
+        AudioSource.PlayClipAtPoint(trapSound, transform.position, 0.5f);
     }
     public void playDyingSound()
     {
@@ -22,18 +23,22 @@ public class PlayerSound : MonoBehaviour
 
     public void playEatingSound()
     {
-        AudioSource.PlayClipAtPoint(eatingSound, transform.position);
+        AudioSource.PlayClipAtPoint(eatingSound, transform.position, 0.5f);
     }
     public void playAttackSound()
     {
-        AudioSource.PlayClipAtPoint(attackSound, transform.position);
+        AudioSource.PlayClipAtPoint(attackSound, transform.position, 0.1f);
     }
     public void playGameWinSound()
     {
-        AudioSource.PlayClipAtPoint(gameWinSound, transform.position, 0.5f);
+        AudioSource.PlayClipAtPoint(gameWinSound, transform.position, 0.3f);
     }
     public void playGameOverSound()
     {
         AudioSource.PlayClipAtPoint(gameOverSound, transform.position, 0.5f);
+    }
+    public void playEnemySound()
+    {
+        AudioSource.PlayClipAtPoint(enemySound, transform.position);
     }
 }

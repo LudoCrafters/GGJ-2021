@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
     }
     public void eat(int amount)
     {
+        hp = Mathf.Min(100, hp + hunger + amount - 100);
         hunger = Mathf.Min(hunger + amount, 100);
         playerSound.playEatingSound();
     }
@@ -58,12 +59,6 @@ public class Player : MonoBehaviour
     public void findBaby()
     {
         ++currentBabyCount;
-
-        if (currentBabyCount >= toFindBabyCount)
-        {
-            // TODO
-            // GAME WINS
-            playerSound.playGameWinSound();
-        }
+        playerSound.playGameWinSound();
     }
 }

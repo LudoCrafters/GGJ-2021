@@ -53,6 +53,6 @@ MonoBehaviour:
   - {fileID: 1560903654769172, guid: e2a987ea1a4ff6849b750d850e5b97bf, type: 3}
   - {fileID: 1834503257163952, guid: 980f37770423ea44b80208b00285a968, type: 3}
   - {fileID: 1004846731592950, guid: ae8d9c7673a08834c9c4a1f22182ba31, type: 3}
-  foodsCount: 1000
-  hunter: {fileID: 0}
+  foodsCount: 400
+  hunter: {fileID: 8451581338947325046, guid: 428e659b19e109c418b610424739878b, type: 3}
   hunterCount: 100

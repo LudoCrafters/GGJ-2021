@@ -101,5 +101,6 @@ public class Spawner : MonoBehaviour
         //Generate the Prefab on the generated position
         GameObject objInstance = Instantiate(prefab, spawn, Quaternion.identity);
         objInstance.transform.parent = this.transform;
+        objInstance.name = objInstance.name + spawn;
     }
 }

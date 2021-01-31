@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     public NavMeshAgent agent;
 
-    public Player player;
+    private Player player;
 
     public LayerMask whatIsGround, whatIsPlayer;
 
@@ -46,7 +46,7 @@ public class EnemyAI : MonoBehaviour
         Vector3 forwardInSight = transform.localRotation * Vector3.forward * sightRange;
         Vector3 forwardInAttack = transform.localRotation * Vector3.forward * attackRange;
 
-        playerInSightRange = Physics.CheckBox(transform.position + forwardInSight / 2,new Vector3(sightRange / 2, sightRange / 2, sightRange / 2), transform.rotation, whatIsPlayer);
+        playerInSightRange = Physics.CheckBox(transform.position + forwardInSight / 2, new Vector3(sightRange / 2, sightRange / 2, sightRange / 2), transform.rotation, whatIsPlayer);
         playerInAttackRange = Physics.CheckBox(transform.position + forwardInAttack / 2, new Vector3(attackRange / 2, attackRange / 2, attackRange / 2), transform.rotation, whatIsPlayer);
 
         if (!playerInSightRange && !playerInAttackRange) Patrolloing();
@@ -58,7 +58,7 @@ public class EnemyAI : MonoBehaviour
 
     private void AttackPlayer()
     {
-        if(player != null)
+        if (player != null)
         {
             // 안움직이게
             agent.SetDestination(transform.position);
@@ -71,6 +71,7 @@ public class EnemyAI : MonoBehaviour
                 animator.SetBool("Shot", true);
                 animator.SetBool("Reload", false);
                 player.hurt(30.0f);
+                playshotgunSound();
 
                 alreadyAttacked = true;
                 Invoke(nameof(ResetAttack), timeBetweenAttack);
@@ -115,7 +116,7 @@ public class EnemyAI : MonoBehaviour
 
     private void ChasePlayer()
     {
-        if(player != null)
+        if (player != null)
         {
             agent.SetDestination(player.transform.position);
         }
@@ -136,7 +137,7 @@ public class EnemyAI : MonoBehaviour
 
     public void playshotgunSound()
     {
-        AudioSource.PlayClipAtPoint(shotgunSound, transform.position);
+        AudioSource.PlayClipAtPoint(shotgunSound, player.transform.position);
     }
 
 }

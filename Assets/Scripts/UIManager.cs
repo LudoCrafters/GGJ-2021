@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class UIManager : MonoBehaviour
 
     public ProgressBarCircle healthBar;
     public ProgressBarCircle hungerBar;
+    public Text babyText;
 
     private bool gameEnd = false;
 
@@ -65,6 +67,8 @@ public class UIManager : MonoBehaviour
         // bar
         healthBar.BarValue = Mathf.Round(player.hp * 100) / 100f;
         hungerBar.BarValue = Mathf.Round(player.hunger * 100) / 100f;
+        // baby
+        babyText.text = "Find Baby Bears!              " + player.currentBabyCount + "/" + player.toFindBabyCount;
 
         // health 0
         if (player.hp <= 0)
@@ -76,7 +80,6 @@ public class UIManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
             Time.timeScale = 0;
-            Destroy(healthBar.gameObject);
             Destroy(player);
         }
 
@@ -90,7 +93,6 @@ public class UIManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
             Time.timeScale = 0;
-            Destroy(healthBar.gameObject);
             Destroy(player);
         }
     }
