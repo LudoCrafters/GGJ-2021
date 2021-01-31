@@ -13,6 +13,8 @@ public class Character : MonoBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
 
+    public Terrain terrain;
+    public Transform water;
 
     Dictionary<string, GameObject> enemies;
 
@@ -66,8 +68,15 @@ public class Character : MonoBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         }
 
+        Vector3 originalPosition = transform.position;
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
+        float yVal = Terrain.activeTerrain.SampleHeight(new Vector3(transform.position.x +moveDirection.x, 0, transform.position.z+moveDirection.z));
+        // water limit
+        if (water.position.y > yVal + 4)
+        {
+            transform.position = new Vector3(originalPosition.x, transform.position.y, originalPosition.z);
+        }
 
         // Player and Camera rotation
         if (canMove && Input.GetMouseButton(1))

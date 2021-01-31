@@ -1235,6 +1235,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7969559986734949162, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: water
+      value: 
+      objectReference: {fileID: 1463146684}
+    - target: {fileID: 7969559986734949162, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
+      propertyPath: terrain
+      value: 
+      objectReference: {fileID: 637124264}
     - target: {fileID: 7969559986734949175, guid: c7981f4a045e4a54c98d056c15323151, type: 3}
       propertyPath: m_Name
       value: Character
